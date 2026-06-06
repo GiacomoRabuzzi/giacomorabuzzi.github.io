@@ -134,75 +134,155 @@
     .section-header h2 { font-family: var(--serif); font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 700; letter-spacing: -.02em; }
     .section-num { font-size: .75rem; font-weight: 600; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
 
-    /* EXPERIENCE — TIMELINE ACCORDION */
-    #experience { background: var(--bg); }
-    .exp-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
-    .exp-col-title {
-      font-family: var(--serif); font-size: 1.1rem; font-weight: 700;
-      letter-spacing: -.01em; margin-bottom: 1.2rem; color: var(--text);
-    }
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="section-inner">
+      <div class="section-header">
+        <h2>Experience & Education</h2>
+      </div>
+      <div class="exp-columns">
 
-    /* Timeline */
-    .timeline { position: relative; padding-left: 0; }
-    .timeline-line {
-      position: absolute; left: 7px; top: 8px; bottom: 8px; width: 1.5px;
-      background: var(--border);
-    }
-    .tl-item { position: relative; padding-left: 28px; margin-bottom: .75rem; }
-    .tl-dot {
-      position: absolute; left: 0; top: 14px;
-      width: 15px; height: 15px; border-radius: 50%;
-      background: var(--bg); border: 2px solid var(--border);
-      transition: border-color .2s, background .2s;
-      z-index: 1;
-    }
-    .tl-item.open .tl-dot,
-    .tl-header:hover ~ .tl-dot,
-    .tl-item:hover .tl-dot {
-      border-color: var(--text); background: var(--text);
-    }
+        <!-- LEFT: Work Experience -->
+        <div>
+          <p class="exp-col-title">Work Experience</p>
+          <div class="timeline">
+            <div class="timeline-line"></div>
 
-    /* Header (always visible) */
-    .tl-header {
-      background: #fff; border: 1.5px solid var(--border);
-      border-radius: 12px; padding: .9rem 1.1rem;
-      display: flex; align-items: center; justify-content: space-between;
-      cursor: none; transition: border-color .2s, box-shadow .2s;
-      gap: .8rem;
-    }
-    .tl-header:hover { border-color: #999; box-shadow: 0 2px 10px rgba(0,0,0,.07); }
-    .tl-item.open .tl-header { border-color: var(--text); border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: none; }
+            <!-- SDG Consulting -->
+            <div class="tl-item" onclick="toggleItem(this)">
+              <div class="tl-dot"></div>
+              <div class="tl-header">
+                <div class="tl-meta">
+                  <span class="tl-period">10/2025 — Ongoing</span>
+                  <span class="tl-role">Data Engineer – Analyst</span>
+                  <div class="tl-company-row">
+                    <a class="tl-company" href="https://www.sdggroup.com" target="_blank" onclick="event.stopPropagation()">SDG Consulting · Full-time</a>
+                  </div>
+                </div>
+                <span class="tl-arrow">→</span>
+              </div>
+              <div class="tl-body">
+                <div class="tl-body-inner">
+                  <div class="tl-desc">
+                    <ul>
+                      <li>Development and maintenance of backend data pipelines using the Azure ecosystem (Data Factory, Databricks, Storage, SQL).</li>
+                      <li>Design and implementation of data transformation models using dbt, with a focus on modularity and analytics engineering best practices.</li>
+                      <li>Building and maintaining dashboards and reports in Power BI for business users across various client organizations.</li>
+                      <li>Collaboration with functional teams to gather requirements and translate them into scalable data solutions.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-    .tl-meta { display: flex; flex-direction: column; gap: .18rem; flex: 1; min-width: 0; }
-    .tl-period { font-size: .68rem; font-weight: 600; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; }
-    .tl-role { font-family: var(--serif); font-size: .97rem; font-weight: 700; letter-spacing: -.01em; color: var(--text); line-height: 1.2; text-decoration: none; }
-    a.tl-role:hover { text-decoration: underline; text-underline-offset: 3px; }
-    .tl-company-row { display: flex; align-items: center; gap: .35rem; margin-top: .15rem; }
-    .tl-company-logo { width: 16px; height: 16px; object-fit: contain; border-radius: 3px; }
-    .tl-company {
-      font-size: .78rem; font-weight: 500; color: var(--muted);
-      text-decoration: none; transition: color .2s;
-    }
-    a.tl-company:hover { color: var(--text); text-decoration: underline; }
-    .tl-arrow {
-      font-size: .8rem; color: var(--muted); flex-shrink: 0;
-      transition: transform .25s; user-select: none;
-    }
-    .tl-item.open .tl-arrow { transform: rotate(90deg); }
+            <!-- Research Intern -->
+            <div class="tl-item" onclick="toggleItem(this)">
+              <div class="tl-dot"></div>
+              <div class="tl-header">
+                <div class="tl-meta">
+                  <span class="tl-period">02/2023 — 05/2023</span>
+                  <span class="tl-role">Research Intern</span>
+                  <div class="tl-company-row">
+                    <a class="tl-company" href="https://en.unimib.it/" target="_blank" onclick="event.stopPropagation()">Università Milano-Bicocca</a>
+                  </div>
+                </div>
+                <span class="tl-arrow">→</span>
+              </div>
+              <div class="tl-body">
+                <div class="tl-body-inner">
+                  <div class="tl-desc">
+                    <ul>
+                      <li>Analysis of the drivers of labour force participation rates in Europe from 1980 to 2019.</li>
+                      <li>Data collection, dataset creation, and application of panel data econometrics techniques.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-    /* Body (accordion) */
-    .tl-body {
-      background: #fff; border: 1.5px solid var(--text);
-      border-top: none; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
-      max-height: 0; overflow: hidden;
-      transition: max-height .35s ease, padding .25s ease;
-    }
-    .tl-item.open .tl-body { max-height: 600px; }
-    .tl-body-inner { padding: 1rem 1.1rem 1.2rem; }
-    .tl-desc { font-size: .83rem; line-height: 1.75; color: rgba(0,0,0,.65); }
-    .tl-desc ul { padding-left: 1.1rem; }
-    .tl-desc li { margin-bottom: .35rem; }
-    .tl-desc p { margin-bottom: .5rem; }
+          </div>
+        </div>
+
+        <!-- RIGHT: Education -->
+        <div>
+          <p class="exp-col-title">Education</p>
+          <div class="timeline">
+            <div class="timeline-line"></div>
+
+            <!-- MSc -->
+            <div class="tl-item" onclick="toggleItem(this)">
+              <div class="tl-dot"></div>
+              <div class="tl-header">
+                <div class="tl-meta">
+                  <span class="tl-period">09/2023 — 01/2026</span>
+                  <a class="tl-role" href="https://en.unimib.it/graduate/statistics-and-economics" target="_blank" onclick="event.stopPropagation()" >M.Sc. Statistical and Economic Sciences</a>
+                  <div class="tl-company-row">
+                    <span class="tl-company">Università Milano-Bicocca · 110/110 cum laude</span>
+                  </div>
+                </div>
+                <span class="tl-arrow">→</span>
+              </div>
+              <div class="tl-body">
+                <div class="tl-body-inner">
+                  <div class="tl-desc">
+                    <p>Statistics and Data Science path. Excellence-awarded department. Core courses: Machine Learning, Bayesian Statistics, Spatial Statistics, Computational Statistics.</p>
+                    <p><strong>Thesis:</strong> <em>State Space Methods for Electoral Polling</em> — developed a family of state-space models for aggregating Italian political polls (2018–2024), extending the Pelagatti–Monti framework with house effects, heteroskedastic variances, binomial measurement and structural cross-institute dependencies.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Erasmus -->
+            <div class="tl-item" onclick="toggleItem(this)">
+              <div class="tl-dot"></div>
+              <div class="tl-header">
+                <div class="tl-meta">
+                  <span class="tl-period">09/2024 — 07/2025</span>
+                  <a class="tl-role" href="https://www.tuwien.at/en/mg/swm/master-curriculum-spme" target="_blank" onclick="event.stopPropagation()" >Erasmus+ Programme</a>
+                  <div class="tl-company-row">
+                    <span class="tl-company">TU Wien · Vienna</span>
+                  </div>
+                </div>
+                <span class="tl-arrow">→</span>
+              </div>
+              <div class="tl-body">
+                <div class="tl-body-inner">
+                  <div class="tl-desc">
+                    <p>Master's programme in Statistics – Probability – Mathematics in Economics.</p>
+                    <p>Courses: Nonparametric Methods, Advanced Regression and Classification, Visual Data Science.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- BSc -->
+            <div class="tl-item" onclick="toggleItem(this)">
+              <div class="tl-dot"></div>
+              <div class="tl-header">
+                <div class="tl-meta">
+                  <span class="tl-period">09/2020 — 07/2023</span>
+                  <a class="tl-role" href="https://en.unimib.it/undergraduate/statistical-economic-sciences" target="_blank" onclick="event.stopPropagation()" >B.Sc. Statistical and Economic Sciences</a>
+                  <div class="tl-company-row">
+                    <span class="tl-company">Università Milano-Bicocca · 110/110 cum laude</span>
+                  </div>
+                </div>
+                <span class="tl-arrow">→</span>
+              </div>
+              <div class="tl-body">
+                <div class="tl-body-inner">
+                  <div class="tl-desc">
+                    <p>Insurance and Finance path. Excellence-awarded department; Scholarship for academic merits.</p>
+                    <p>Core courses: Statistics, Econometrics, Databases, Data Mining, Economic Time Series Analysis.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
 
     /* SKILLS */
     #skills { background: var(--bg); border-top: 1px solid var(--border); }
