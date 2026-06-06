@@ -172,7 +172,7 @@
       font-size: .8rem; font-weight: 500; padding: .35rem .8rem; border-radius: 100px;
       background: rgba(255,255,255,.6); border: 1px solid rgba(0,0,0,.12); color: var(--text);
     }
-    .skill-tag.hi { background: rgba(255,255,255,.85); color: var(--text); border-color: rgba(0,0,0,.18); font-weight: 600; }
+    .skill-tag.hi { background: rgba(255,255,255,.6); color: var(--text); border-color: rgba(0,0,0,.12); font-weight: 500; }
 
     /* PROJECTS CTA */
     #projects-cta { border-top: 1px solid var(--border); }
@@ -222,6 +222,7 @@
     @media (max-width: 768px) {
       nav { padding: 0 1.2rem; } .nav-links { display: none; }
       section { padding: 4rem 1.2rem; } #hero { padding: 7rem 1.2rem 4rem; }
+      .profile-card { grid-template-columns: 1fr; } .profile-img-wrap { min-height: 220px; } .profile-info { padding: 2rem 1.6rem; }
       .exp-grid, .skills-bento { grid-template-columns: 1fr; }
       .exp-card:nth-child(5), .skill-card:nth-child(5) { grid-column: auto; }
       .cta-block { flex-direction: column; text-align: center; padding: 3rem 2rem; }
@@ -253,17 +254,24 @@
 
   <!-- HERO -->
   <section id="hero">
-
-    <h1 class="hero-title">Giacomo<br>Rabuzzi.</h1>
-    <p class="hero-role">Data Engineer · Statistics · Data Science</p>
-    <p class="hero-desc">
-      Data Engineer with a background in Statistics, Data Science and Economics. Curious by nature, I love digging into numbers to uncover patterns and craft visualisations that make data speak clearly and beautifully.
-    </p>
-    <div class="hero-actions">
-      <button class="btn-dark" onclick="revealEmail()">✉ Email me</button>
-      <a href="projects.html" class="btn-outline">View projects →</a>
+    <div class="profile-card">
+      <div class="profile-img-wrap">
+        <img src="https://raw.githubusercontent.com/GiacomoRabuzzi/GiacomoRabuzzi/main/profile.jpg" alt="Giacomo Rabuzzi" onerror="this.style.display='none'"/>
+      </div>
+      <div class="profile-info">
+        <div class="profile-tag"><span class="profile-dot"></span> Data Engineer</div>
+        <h1 class="profile-name">Giacomo<br>Rabuzzi.</h1>
+        <p class="profile-role">Statistics · Data Science · Economics</p>
+        <p class="profile-desc">
+          Data Engineer with a background in Statistics, Data Science and Economics. Curious by nature, I love digging into numbers to uncover patterns and craft visualisations that make data speak clearly and beautifully.
+        </p>
+        <div class="profile-actions">
+          <button class="btn-dark" onclick="revealEmail()">✉ Email me</button>
+          <a href="projects.html" class="btn-outline">View projects →</a>
+        </div>
+        <div class="email-reveal" id="email-reveal">giacomorabuzzi@gmail.com</div>
+      </div>
     </div>
-    <div class="email-reveal" id="email-reveal">giacomorabuzzi@gmail.com</div>
     <p class="hero-scroll">↓ scroll to explore</p>
   </section>
 
