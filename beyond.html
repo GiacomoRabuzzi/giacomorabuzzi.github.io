@@ -734,30 +734,42 @@
 
     async function fetchSuggestions(q) {
       try {
-        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=6&addressdetails=1&featuretype=restaurant,cafe,bar,food`;
-        const res  = await fetch(url, { headers: { 'Accept-Language': 'en', 'User-Agent': 'GiacomoRabuzziSite/1.0' } });
+        const url = `https://api.foursquare.com/v3/places/search?query=${encodeURIComponent(q)}&categories=13000&limit=8&fields=name,location,geocodes`;
+        const res  = await fetch(url, {
+          headers: {
+            'Authorization': 'RIULDVMOZJ1LGKD31Y5UE4YNOBO3KPL0U14DXTVTI3CYISTO',
+            'Accept': 'application/json'
+          }
+        });
         const data = await res.json();
-        renderDropdown(data, q);
+        renderDropdown(data.results || []);
       } catch { dropdown.innerHTML = '<div class="autocomplete-loading">⚠️ Network error</div>'; }
     }
 
-    function renderDropdown(results, q) {
+    function renderDropdown(results) {
       if (!results.length) {
-        dropdown.innerHTML = '<div class="autocomplete-loading">No results — try adding the city name</div>';
+        dropdown.innerHTML = '<div class="autocomplete-loading">No results — try a different name or add the city</div>';
         return;
       }
       dropdown.innerHTML = results.map((r, i) => {
-        const addr = r.address;
-        const name = r.name || r.display_name.split(',')[0];
-        const city = addr.city || addr.town || addr.village || addr.county || addr.state || '';
-        const country = addr.country_code ? addr.country_code.toUpperCase() : '';
+        const name = r.name;
+        const loc  = r.location || {};
+        const city = loc.city || loc.locality || loc.region || '';
+        const country = loc.country || '';
         const cityStr = [city, country].filter(Boolean).join(', ');
-        const fullAddr = r.display_name;
-        return `<div class="autocomplete-item" data-idx="${i}" data-lat="${r.lat}" data-lng="${r.lon}" data-name="${name.replace(/"/g,'&quot;')}" data-city="${cityStr.replace(/"/g,'&quot;')}">
+        const addr = [loc.address, city, country].filter(Boolean).join(', ');
+        const lat = r.geocodes?.main?.latitude;
+        const lng = r.geocodes?.main?.longitude;
+        if (!lat || !lng) return '';
+        return `<div class="autocomplete-item" data-lat="${lat}" data-lng="${lng}" data-name="${name.replace(/"/g,'&quot;')}" data-city="${cityStr.replace(/"/g,'&quot;')}">
           <div class="autocomplete-item-name">${name}</div>
-          <div class="autocomplete-item-addr">${fullAddr}</div>
+          <div class="autocomplete-item-addr">${addr}</div>
         </div>`;
-      }).join('');
+      }).filter(Boolean).join('');
+      if (!dropdown.innerHTML) {
+        dropdown.innerHTML = '<div class="autocomplete-loading">No results with coordinates</div>';
+        return;
+      }
       dropdown.classList.add('open');
       dropdown.querySelectorAll('.autocomplete-item').forEach(el => {
         el.addEventListener('click', () => {
