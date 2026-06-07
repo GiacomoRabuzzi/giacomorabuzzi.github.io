@@ -235,6 +235,26 @@
     }
     .btn-modal-save:hover { opacity: .8; }
 
+    /* Autocomplete */
+    .autocomplete-wrap { position: relative; margin-bottom: 1rem; }
+    .autocomplete-wrap input { margin-bottom: 0; }
+    .autocomplete-dropdown {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: #fff; border: 1.5px solid var(--border); border-radius: 12px;
+      box-shadow: 0 8px 28px rgba(0,0,0,.13); z-index: 99999;
+      overflow: hidden; display: none;
+    }
+    .autocomplete-dropdown.open { display: block; }
+    .autocomplete-item {
+      padding: .65rem 1rem; cursor: pointer;
+      transition: background .15s; border-bottom: 1px solid var(--border);
+    }
+    .autocomplete-item:last-child { border-bottom: none; }
+    .autocomplete-item:hover, .autocomplete-item.active { background: rgba(0,0,0,.05); }
+    .autocomplete-item-name { font-size: .86rem; font-weight: 600; color: var(--text); }
+    .autocomplete-item-addr { font-size: .76rem; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .autocomplete-loading { padding: .65rem 1rem; font-size: .82rem; color: var(--muted); }
+
     /* Leaflet popup */
     .leaflet-popup-content-wrapper {
       border-radius: 12px !important; border: 1.5px solid var(--border) !important;
@@ -466,11 +486,12 @@
   <div class="modal-overlay" id="add-modal">
     <div class="modal">
       <h3>New restaurant</h3>
-      <label>Restaurant name</label>
-      <input type="text" id="modal-name" placeholder="e.g. Osteria del Cinghiale" />
-      <label>City</label>
-      <input type="text" id="modal-city" placeholder="e.g. Florence, IT" />
-      <div id="modal-geo-status" style="font-size:.78rem;color:var(--muted);margin-top:-.5rem;margin-bottom:.8rem;min-height:1.1rem;"></div>
+      <label>Search restaurant</label>
+      <div class="autocomplete-wrap">
+        <input type="text" id="modal-search" placeholder="e.g. Trattoria da Enzo, Rome" autocomplete="off" />
+        <div class="autocomplete-dropdown" id="modal-dropdown"></div>
+      </div>
+      <div id="modal-geo-status" style="font-size:.78rem;color:var(--muted);margin-bottom:.8rem;min-height:1.1rem;"></div>
       <label>Rating</label>
       <select id="modal-stars">
         <option value="5">★★★★★ Exceptional</option>
@@ -660,51 +681,115 @@
     function openAddModal() { document.getElementById('add-modal').classList.add('open'); }
     function closeAddModal() {
       document.getElementById('add-modal').classList.remove('open');
-      ['modal-name','modal-city','modal-comment'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('modal-search').value = '';
+      document.getElementById('modal-comment').value = '';
       document.getElementById('modal-stars').value = '5';
       document.getElementById('modal-geo-status').textContent = '';
+      document.getElementById('modal-dropdown').classList.remove('open');
+      document.getElementById('modal-dropdown').innerHTML = '';
+      selectedPlace = null;
+    }
+
+    // Autocomplete logic
+    let selectedPlace = null; // { name, city, lat, lng }
+    let acDebounce = null;
+
+    const searchInput = document.getElementById('modal-search');
+    const dropdown    = document.getElementById('modal-dropdown');
+    const geoStatus   = document.getElementById('modal-geo-status');
+
+    searchInput.addEventListener('input', () => {
+      clearTimeout(acDebounce);
+      selectedPlace = null;
+      geoStatus.textContent = '';
+      const q = searchInput.value.trim();
+      if (q.length < 3) { dropdown.classList.remove('open'); dropdown.innerHTML = ''; return; }
+      dropdown.innerHTML = '<div class="autocomplete-loading">Searching…</div>';
+      dropdown.classList.add('open');
+      acDebounce = setTimeout(() => fetchSuggestions(q), 380);
+    });
+
+    searchInput.addEventListener('keydown', e => {
+      const items = dropdown.querySelectorAll('.autocomplete-item');
+      const active = dropdown.querySelector('.autocomplete-item.active');
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (!active) { items[0]?.classList.add('active'); }
+        else { active.classList.remove('active'); (active.nextElementSibling || items[0])?.classList.add('active'); }
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (!active) { items[items.length-1]?.classList.add('active'); }
+        else { active.classList.remove('active'); (active.previousElementSibling || items[items.length-1])?.classList.add('active'); }
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (active) active.click();
+      } else if (e.key === 'Escape') {
+        dropdown.classList.remove('open');
+      }
+    });
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.autocomplete-wrap')) dropdown.classList.remove('open');
+    });
+
+    async function fetchSuggestions(q) {
+      try {
+        const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=6&addressdetails=1&featuretype=restaurant,cafe,bar,food`;
+        const res  = await fetch(url, { headers: { 'Accept-Language': 'en', 'User-Agent': 'GiacomoRabuzziSite/1.0' } });
+        const data = await res.json();
+        renderDropdown(data, q);
+      } catch { dropdown.innerHTML = '<div class="autocomplete-loading">⚠️ Network error</div>'; }
+    }
+
+    function renderDropdown(results, q) {
+      if (!results.length) {
+        dropdown.innerHTML = '<div class="autocomplete-loading">No results — try adding the city name</div>';
+        return;
+      }
+      dropdown.innerHTML = results.map((r, i) => {
+        const addr = r.address;
+        const name = r.name || r.display_name.split(',')[0];
+        const city = addr.city || addr.town || addr.village || addr.county || addr.state || '';
+        const country = addr.country_code ? addr.country_code.toUpperCase() : '';
+        const cityStr = [city, country].filter(Boolean).join(', ');
+        const fullAddr = r.display_name;
+        return `<div class="autocomplete-item" data-idx="${i}" data-lat="${r.lat}" data-lng="${r.lon}" data-name="${name.replace(/"/g,'&quot;')}" data-city="${cityStr.replace(/"/g,'&quot;')}">
+          <div class="autocomplete-item-name">${name}</div>
+          <div class="autocomplete-item-addr">${fullAddr}</div>
+        </div>`;
+      }).join('');
+      dropdown.classList.add('open');
+      dropdown.querySelectorAll('.autocomplete-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const name = el.dataset.name;
+          const city = el.dataset.city;
+          const lat  = parseFloat(el.dataset.lat);
+          const lng  = parseFloat(el.dataset.lng);
+          selectedPlace = { name, city, lat, lng };
+          searchInput.value = city ? `${name} — ${city}` : name;
+          geoStatus.textContent = `✅ ${city || 'location found'}`;
+          dropdown.classList.remove('open');
+        });
+      });
     }
 
     async function saveRestaurant() {
-      const name    = document.getElementById('modal-name').value.trim();
-      const city    = document.getElementById('modal-city').value.trim();
       const stars   = parseInt(document.getElementById('modal-stars').value);
       const comment = document.getElementById('modal-comment').value.trim();
-      const status  = document.getElementById('modal-geo-status');
 
-      if (!name || !city) { alert('Please fill in restaurant name and city.'); return; }
-
-      status.textContent = '🔍 Looking up coordinates…';
-      const query = encodeURIComponent(`${name}, ${city}`);
-      try {
-        const res  = await fetch(`https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1`, {
-          headers: { 'Accept-Language': 'en', 'User-Agent': 'GiacomoRabuzziSite/1.0' }
-        });
-        const data = await res.json();
-        if (!data.length) {
-          // fallback: search by city only
-          const res2  = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`, {
-            headers: { 'Accept-Language': 'en', 'User-Agent': 'GiacomoRabuzziSite/1.0' }
-          });
-          const data2 = await res2.json();
-          if (!data2.length) { status.textContent = '⚠️ Location not found. Check the city name.'; return; }
-          const lat = parseFloat(data2[0].lat), lng = parseFloat(data2[0].lon);
-          finishSave({ name, city, lat, lng, stars, comment: comment || '—' });
-        } else {
-          const lat = parseFloat(data[0].lat), lng = parseFloat(data[0].lon);
-          status.textContent = `✅ Found: ${parseFloat(lat.toFixed(4))}, ${parseFloat(lng.toFixed(4))}`;
-          finishSave({ name, city, lat, lng, stars, comment: comment || '—' });
-        }
-      } catch(e) {
-        status.textContent = '⚠️ Network error — check your connection.';
+      if (!selectedPlace) {
+        geoStatus.textContent = '⚠️ Please select a restaurant from the suggestions.';
+        searchInput.focus();
+        return;
       }
+      finishSave({ ...selectedPlace, stars, comment: comment || '—' });
     }
 
     function finishSave(r) {
       restaurants.push(r);
       saveToStorage(restaurants);
       renderMarkers();
-      map.flyTo([r.lat, r.lng], 13, { duration: 1.4 });
+      map.flyTo([r.lat, r.lng], 14, { duration: 1.4 });
       closeAddModal();
     }
     document.getElementById('add-modal').addEventListener('click', function(e) { if (e.target === this) closeAddModal(); });
