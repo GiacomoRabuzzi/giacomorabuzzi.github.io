@@ -185,6 +185,7 @@
       width: 100%; height: 480px;
       border-radius: var(--radius); overflow: hidden;
       border: 1.5px solid var(--border); box-shadow: 0 4px 18px rgba(0,0,0,.1);
+      position: relative; z-index: 0;
     }
     .map-legend { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; align-items: center; }
     .map-legend-item { display: flex; align-items: center; gap: .4rem; font-size: .78rem; font-weight: 500; color: var(--muted); }
@@ -300,7 +301,7 @@
 
     <div class="polaroid-cluster cluster-left">
       <div class="polaroid">
-        <img src="milan_scudetto.jpg" alt="Milan" />
+        <img src="milan_scudetto.jpeg" alt="Milan" />
       </div>
       <div class="polaroid">
         <img src="basket_giacomo.jpeg" alt="Basketball" />
@@ -375,7 +376,7 @@
 
       <div class="milan-photos">
         <div class="photo-card">
-          <img src="milan_scudetto.jpg" alt="AC Milan Scudetto 2011" />
+          <img src="milan_scudetto.jpeg" alt="AC Milan Scudetto 2011" />
           <div class="photo-card-caption">
             Scudetto 2010/11
             <span>My first — the one that stays with you forever</span>
@@ -435,13 +436,16 @@
   <section class="passion-section" id="map-section">
     <div class="section-inner">
       <div class="section-header">
-        <h2>🍽️ Restaurants Across Europe</h2>
-        <span class="section-tag">My personal map</span>
+        <h2>🍽️ Eating My Way Through Europe</h2>
+        <span class="section-tag">Culinary tourism</span>
       </div>
 
       <p class="map-intro">
-        When I travel, what I remember most isn't the museums or the monuments — it's the tables where I ate well.
-        This is my personal map of European restaurants that left a mark. Click a pin to read the note.
+        I've always thought that visiting a place properly means eating it too — not just looking at it.
+        Museums and monuments tell you what a city wants you to remember. A market stall, a family trattoria, a wine bar where nobody speaks English — those tell you how it actually lives.
+        To really immerse yourself in a culture, you have to sit down, order something you can't pronounce, and eat without prejudice.<br><br>
+        There's also something genuinely good for the mind about eating and drinking well. That quiet satisfaction after discovering a new regional dish, a grape variety you'd never heard of, a preparation that makes something simple taste extraordinary — it's a small but very real form of happiness.
+        This map is my personal record of the places that gave me that feeling. Click a pin to read the note.
       </p>
 
       <div id="restaurant-map"></div>
@@ -454,7 +458,7 @@
         <span style="color:var(--muted);font-size:.78rem;margin-left:.5rem;">· Click a marker for details</span>
       </div>
 
-      <button class="map-add-btn" onclick="openAddModal()">+ Add restaurant</button>
+      <button class="map-add-btn" onclick="promptPassword()">+ Add restaurant</button>
     </div>
   </section>
 
@@ -599,20 +603,63 @@
       { name: "Navigante", city: "Milan, IT", lat: 45.4476, lng: 9.1747, stars: 5, comment: "Incredibly fresh fish at the Navigli canals. The kind of place where you don't look at the menu because you trust the kitchen completely." }
     ];
 
+    const MAP_PASSWORD = 'giacomo2026';
+
     function loadRestaurants() {
       try { const s = localStorage.getItem(STORAGE_KEY); return s ? JSON.parse(s) : defaultRestaurants; }
       catch { return defaultRestaurants; }
     }
     function saveToStorage(r) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(r)); } catch {} }
     function starsHTML(n) { return '★'.repeat(n) + '☆'.repeat(5 - n); }
-    function addMarker(r) {
-      const m = L.marker([r.lat, r.lng], { icon: redIcon }).addTo(map);
-      m.bindPopup(`<div class="popup-name">${r.name}</div><div class="popup-city">${r.city}</div><div class="popup-stars">${starsHTML(r.stars)}</div><div class="popup-comment">${r.comment}</div>`, { maxWidth: 260 });
+
+    let markers = []; // keep track of leaflet marker objects
+
+    function renderMarkers() {
+      // Remove all existing markers from map
+      markers.forEach(m => map.removeLayer(m));
+      markers = [];
+      restaurants.forEach((r, index) => {
+        const m = L.marker([r.lat, r.lng], { icon: redIcon }).addTo(map);
+        const popupHTML = `
+          <div class="popup-name">${r.name}</div>
+          <div class="popup-city">${r.city}</div>
+          <div class="popup-stars">${starsHTML(r.stars)}</div>
+          <div class="popup-comment">${r.comment}</div>
+          <button onclick="deleteRestaurant(${index})" style="
+            margin-top:10px; padding:4px 12px; border-radius:100px;
+            border:1.5px solid #e05c5c; background:transparent;
+            color:#c0392b; font-size:.75rem; font-weight:600;
+            cursor:pointer; transition:background .2s;
+          " onmouseover="this.style.background='#fde8e8'" onmouseout="this.style.background='transparent'">
+            🗑 Remove
+          </button>`;
+        m.bindPopup(popupHTML, { maxWidth: 280 });
+        markers.push(m);
+      });
+    }
+
+    function deleteRestaurant(index) {
+      const pwd = prompt('Enter password to remove this restaurant:');
+      if (pwd !== MAP_PASSWORD) {
+        if (pwd !== null) alert('Wrong password.');
+        return;
+      }
+      restaurants.splice(index, 1);
+      saveToStorage(restaurants);
+      renderMarkers();
     }
 
     let restaurants = loadRestaurants();
-    restaurants.forEach(addMarker);
+    renderMarkers();
 
+    function promptPassword() {
+      const pwd = prompt('Enter password to add a restaurant:');
+      if (pwd === MAP_PASSWORD) {
+        openAddModal();
+      } else if (pwd !== null) {
+        alert('Wrong password.');
+      }
+    }
     function openAddModal() { document.getElementById('add-modal').classList.add('open'); }
     function closeAddModal() {
       document.getElementById('add-modal').classList.remove('open');
@@ -630,7 +677,7 @@
       const r = { name, city, lat, lng, stars, comment: comment || '—' };
       restaurants.push(r);
       saveToStorage(restaurants);
-      addMarker(r);
+      renderMarkers();
       map.flyTo([lat, lng], 12, { duration: 1.2 });
       closeAddModal();
     }
