@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giacomo Rabuzzi — Data Engineer</title>
+  <link rel="icon" type="image/png" href="IconcinaSito.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f3ee;
+      --text: #111111;
+      --muted: #888882;
+      --border: #d9d7d0;
+      --card-green:  #d4edda;
+      --card-yellow: #f0e88a;
+      --card-purple: #cfc5f0;
+      --card-blue:   #c8dff5;
+      --card-peach:  #f2ddc8;
+      --card-mint:   #c8ede0;
+      --serif: 'Bricolage Grotesque', sans-serif;
+      --sans: 'Inter', sans-serif;
+      --radius: 16px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: var(--sans); font-weight: 400;
+      overflow-x: hidden; -webkit-font-smoothing: antialiased;
+      cursor: none;
+    }
+    a, button { cursor: none; }
+
+    /* ── CUSTOM CURSOR ── */
+    #custom-cursor {
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      width: 22px;
+      height: 20px;
+      transition: opacity .2s;
+    }
+    #custom-cursor .bar {
+      border-radius: 2px 2px 0 0;
+      width: 4px;
+      flex-shrink: 0;
+    }
+    #custom-cursor .bar:nth-child(1) { height: 8px;  background: #c9a0dc; }
+    #custom-cursor .bar:nth-child(2) { height: 14px; background: #4caf7d; }
+    #custom-cursor .bar:nth-child(3) { height: 10px; background: #f0a500; }
+    #custom-cursor .bar:nth-child(4) { height: 18px; background: #e05c5c; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 3rem; height: 60px;
+      background: rgba(245,243,238,0.92); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family: var(--serif); font-size: 1.1rem; font-weight: 700; color: var(--text); }
+    .nav-links { display: flex; gap: .1rem; list-style: none; align-items: center; }
+    .nav-links a {
+      font-size: .82rem; font-weight: 500; color: var(--muted);
+      text-decoration: none; padding: .4rem .85rem; border-radius: 8px;
+      transition: color .2s, background .2s;
+    }
+    .nav-links a:hover { color: var(--text); background: rgba(0,0,0,.06); }
+    .nav-cta { background: var(--text) !important; color: var(--bg) !important; border-radius: 100px !important; margin-left: .4rem; }
+
+    h1.hero-title {
+      font-family: var(--serif); font-size: clamp(2.2rem, 5.5vw, 4.2rem);
+      font-weight: 800; line-height: 1.0; letter-spacing: -.03em;
+      color: var(--text); margin-bottom: 1rem;
+    }
+
+    /* HERO */
+    #hero {
+      padding: 8rem 3rem 5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 3rem;
+    }
+    .hero-center { text-align: center; }
+    .hero-role {
+      font-family: var(--serif); font-size: clamp(1rem, 2vw, 1.4rem);
+      font-weight: 500; color: var(--muted); margin-bottom: 1.6rem; letter-spacing: -.01em;
+    }
+    .hero-desc { font-size: 1rem; line-height: 1.8; color: var(--muted); max-width: 420px; margin: 0 auto 2.5rem; }
+    .hero-actions { display: flex; gap: .8rem; justify-content: center; flex-wrap: wrap; }
+    .hero-scroll { margin-top: 3rem; font-size: .75rem; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+
+    /* Polaroid cluster */
+    .polaroid-cluster { display: flex; flex-direction: column; gap: .5rem; align-items: center; position: relative; height: 380px; }
+    .polaroid {
+      position: absolute;
+      background: #fff;
+      padding: 10px 10px 32px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.13), 0 1px 4px rgba(0,0,0,.08);
+      width: 148px;
+      transition: transform .3s, box-shadow .3s;
+    }
+    .polaroid:hover {
+      box-shadow: 0 10px 32px rgba(0,0,0,.18);
+      z-index: 10;
+    }
+    .polaroid img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; }
+    .polaroid-label {
+      text-align: center; margin-top: 6px;
+      font-family: var(--sans); font-size: .72rem; font-weight: 600;
+      color: #444; letter-spacing: .04em; text-transform: uppercase;
+    }
+
+    /* Left cluster positions */
+    .cluster-left .polaroid:nth-child(1) { top: -40px;  left: 20px;  transform: rotate(-6deg); }
+    .cluster-left .polaroid:nth-child(2) { top: 160px; left: 50px;  transform: rotate(4deg); }
+
+    /* Right cluster positions */
+    .cluster-right .polaroid:nth-child(1) { top: -40px;  right: 20px; transform: rotate(5deg); }
+    .cluster-right .polaroid:nth-child(2) { top: 160px; right: 50px; transform: rotate(-4deg); }
+
+    /* Hover straighten slightly */
+    .polaroid:hover { transform: rotate(0deg) scale(1.04) !important; }
+
+    @media (max-width: 900px) {
+      #hero { grid-template-columns: 1fr; text-align: center; padding: 7rem 1.2rem 4rem; }
+      .polaroid-cluster { display: none; }
+    }
+
+    .btn-dark {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: var(--text); color: var(--bg);
+      font-family: var(--sans); font-size: .85rem; font-weight: 600;
+      padding: .7rem 1.6rem; border-radius: 100px;
+      border: none; cursor: none; text-decoration: none; transition: opacity .2s;
+    }
+    .btn-dark:hover { opacity: .8; }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: transparent; color: var(--text);
+      font-family: var(--sans); font-size: .85rem; font-weight: 600;
+      padding: .7rem 1.6rem; border-radius: 100px;
+      border: 1.5px solid var(--border); text-decoration: none; transition: background .2s;
+    }
+    .btn-outline:hover { background: rgba(0,0,0,.05); }
+
+    .email-reveal {
+      margin-top: .6rem; font-size: .85rem; font-weight: 600;
+      color: #4caf7d; opacity: 0; max-height: 0; overflow: hidden;
+      transition: opacity .3s, max-height .3s;
+    }
+    .email-reveal.visible { opacity: 1; max-height: 2rem; }
+    .hero-scroll { margin-top: 3.5rem; font-size: .75rem; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+
+    /* SECTIONS */
+    section { padding: 6rem 3rem; }
+    .section-inner { max-width: 960px; margin: 0 auto; }
+    .section-header {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 2.5rem; border-bottom: 1.5px solid var(--text); padding-bottom: .8rem;
+    }
+    .section-header h2 { font-family: var(--serif); font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 700; letter-spacing: -.02em; }
+    .section-num { font-size: .75rem; font-weight: 600; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; }
+
+    /* EXPERIENCE — TIMELINE ACCORDION */
+    #experience { background: var(--bg); }
+    .exp-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; }
+    .exp-col-title {
+      font-family: var(--serif); font-size: 1.1rem; font-weight: 700;
+      letter-spacing: -.01em; margin-bottom: 1.2rem; color: var(--text);
+    }
+
+    /* Timeline */
+    .timeline { position: relative; padding-left: 0; }
+    .timeline-line {
+      position: absolute; left: 7px; top: 8px; bottom: 8px; width: 1.5px;
+      background: var(--border);
+    }
+    .tl-item { position: relative; padding-left: 28px; margin-bottom: .75rem; }
+    .tl-dot {
+      position: absolute; left: 0; top: 14px;
+      width: 15px; height: 15px; border-radius: 50%;
+      background: var(--bg); border: 2px solid var(--border);
+      transition: border-color .2s, background .2s;
+      z-index: 1;
+    }
+    .tl-item.open .tl-dot,
+    .tl-header:hover ~ .tl-dot,
+    .tl-item:hover .tl-dot {
+      border-color: var(--text); background: var(--text);
+    }
+
+    /* Header (always visible) */
+    .tl-header {
+      background: #fff; border: 1.5px solid var(--border);
+      border-radius: 12px; padding: .9rem 1.1rem;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: none; transition: border-color .2s, box-shadow .2s;
+      gap: .8rem;
+    }
+    .tl-header:hover { border-color: #999; box-shadow: 0 2px 10px rgba(0,0,0,.07); }
+    .tl-item.open .tl-header { border-color: var(--text); border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: none; }
+
+    .tl-meta { display: flex; flex-direction: column; gap: .18rem; flex: 1; min-width: 0; }
+    .tl-period { font-size: .68rem; font-weight: 600; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; }
+    .tl-role { font-family: var(--serif); font-size: .97rem; font-weight: 700; letter-spacing: -.01em; color: var(--text); line-height: 1.2; text-decoration: none; }
+    a.tl-role:hover { text-decoration: underline; text-underline-offset: 3px; }
+    .tl-company-row { display: flex; align-items: center; gap: .35rem; margin-top: .15rem; }
+    .tl-company-logo { width: 16px; height: 16px; object-fit: contain; border-radius: 3px; }
+    .tl-company {
+      font-size: .78rem; font-weight: 500; color: var(--muted);
+      text-decoration: none; transition: color .2s;
+    }
+    a.tl-company:hover { color: var(--text); text-decoration: underline; }
+    .tl-arrow {
+      font-size: .8rem; color: var(--muted); flex-shrink: 0;
+      transition: transform .25s; user-select: none;
+    }
+    .tl-item.open .tl-arrow { transform: rotate(90deg); }
+
+    /* Body (accordion) */
+    .tl-body {
+      background: #fff; border: 1.5px solid var(--text);
+      border-top: none; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
+      max-height: 0; overflow: hidden;
+      transition: max-height .35s ease, padding .25s ease;
+    }
+    .tl-item.open .tl-body { max-height: 600px; }
+    .tl-body-inner { padding: 1rem 1.1rem 1.2rem; }
+    .tl-desc { font-size: .83rem; line-height: 1.75; color: rgba(0,0,0,.65); }
+    .tl-desc ul { padding-left: 1.1rem; }
+    .tl-desc li { margin-bottom: .35rem; }
+    .tl-desc p { margin-bottom: .5rem; }
+
+    /* SKILLS */
+    #skills { background: var(--bg); border-top: 1px solid var(--border); }
+    .skills-bento { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .skill-card { border-radius: var(--radius); padding: 2rem 2.2rem; border: 1.5px solid var(--border); }
+    .skill-card:nth-child(1) { background: var(--card-purple); }
+    .skill-card:nth-child(2) { background: var(--card-mint); }
+    .skill-card:nth-child(3) { background: var(--card-yellow); }
+    .skill-card:nth-child(4) { background: var(--card-blue); }
+    .skill-card:nth-child(5) { background: var(--card-peach); grid-column: 1 / -1; }
+
+    .skill-card-title { font-family: var(--serif); font-size: 1.1rem; font-weight: 700; letter-spacing: -.01em; margin-bottom: 1.2rem; }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: .45rem; }
+    .skill-tag {
+      font-size: .8rem; font-weight: 600; padding: .35rem .8rem; border-radius: 100px;
+      background: rgba(255,255,255,.85); border: 1px solid rgba(0,0,0,.18); color: var(--text);
+    }
+    .skill-tag.hi { background: rgba(255,255,255,.85); color: var(--text); border-color: rgba(0,0,0,.18); font-weight: 600; }
+
+    /* Cert links */
+    a.cert-link { text-decoration: none; color: inherit; transition: text-decoration .15s; }
+    a.cert-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+    /* DataCamp dropdown */
+    .cert-dropdown-wrap { position: relative; }
+    .cert-dropdown-trigger { cursor: none; user-select: none; }
+    .cert-dropdown-trigger:hover { text-decoration: underline; text-underline-offset: 3px; }
+    .cert-dropdown {
+      display: none; position: absolute; top: calc(100% + 6px); left: 0;
+      background: #fff; border: 1.5px solid var(--border); border-radius: 10px;
+      padding: .5rem .2rem; min-width: 260px; z-index: 50;
+      box-shadow: 0 4px 16px rgba(0,0,0,.1);
+    }
+    .cert-dropdown.open { display: flex; flex-direction: column; }
+    .cert-dropdown a {
+      padding: .45rem .9rem; font-size: .8rem; font-weight: 500;
+      color: var(--text); text-decoration: none; border-radius: 6px;
+      transition: background .15s;
+    }
+    .cert-dropdown a:hover { background: var(--bg); text-decoration: underline; text-underline-offset: 3px; }
+
+    /* PROJECTS CTA */
+    #projects-cta { border-top: 1px solid var(--border); }
+    .cta-block {
+      background: var(--text); border-radius: 20px; padding: 5rem 4rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 3rem;
+    }
+    .cta-block h2 {
+      font-family: var(--serif); font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 800;
+      color: var(--bg); line-height: 1.1; letter-spacing: -.02em; margin-bottom: .6rem;
+    }
+    .cta-block p { font-size: .9rem; color: rgba(245,243,238,.5); line-height: 1.7; max-width: 400px; }
+    .btn-cream {
+      display: inline-flex; align-items: center; gap: .6rem;
+      background: var(--bg); color: var(--text);
+      font-size: .85rem; font-weight: 700; padding: .8rem 2rem; border-radius: 100px;
+      text-decoration: none; white-space: nowrap; transition: opacity .2s;
+    }
+    .btn-cream:hover { opacity: .85; }
+    .btn-cream::after { content: '→'; }
+
+    /* CONTACTS */
+    #contacts { border-top: 1px solid var(--border); }
+    .contacts-actions { display: flex; gap: .8rem; flex-wrap: wrap; }
+
+    footer {
+      padding: 1.5rem 3rem; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; font-size: .78rem; color: var(--muted);
+    }
+
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.85)} }
+
+    @media (max-width: 768px) {
+      nav { padding: 0 1.2rem; } .nav-links { display: none; }
+      section { padding: 4rem 1.2rem; }
+      .exp-columns { grid-template-columns: 1fr; gap: 2rem; }
+      .skills-bento { grid-template-columns: 1fr; }
+      .skill-card:nth-child(5) { grid-column: auto; }
+      .cta-block { flex-direction: column; text-align: center; padding: 3rem 2rem; }
+      footer { padding: 1.5rem 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CUSTOM CURSOR -->
+  <div id="custom-cursor">
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+  </div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">Giacomo Rabuzzi</div>
+    <ul class="nav-links">
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="projects.html">Projects</a></li>
+      <li><a href="#contacts" class="nav-cta">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+
+    <!-- LEFT polaroids: Pavia + Milano -->
+    <div class="polaroid-cluster cluster-left">
+      <div class="polaroid">
+        <img src="Pavia.jpg" alt="Pavia" />
+        <div class="polaroid-label">Pavia</div>
+      </div>
+      <div class="polaroid">
+        <img src="Milano.jpg" alt="Milano" />
+        <div class="polaroid-label">Milano</div>
+      </div>
+    </div>
+
+    <!-- CENTER text -->
+    <div class="hero-center">
+      <h1 class="hero-title">Giacomo<br>Rabuzzi</h1>
+      <p class="hero-role">Data Engineer · Statistics · Data Science</p>
+      <p class="hero-desc">
+        Data Engineer with a background in Statistics, Data Science and Economics. Curious by nature, I love digging into numbers to uncover patterns and craft visualisations that make data speak clearly and beautifully.
+      </p>
+      <div class="hero-actions">
+        <button class="btn-dark" onclick="revealEmail()">✉ Email me</button>
+        <a href="projects.html" class="btn-outline">View projects →</a>
+      </div>
+      <div class="email-reveal" id="email-reveal">giacomorabuzzi@gmail.com</div>
+      <p class="hero-scroll">↓ scroll to explore</p>
+    </div>
+
+    <!-- RIGHT polaroids: Vienna + Verona -->
+    <div class="polaroid-cluster cluster-right">
+      <div class="polaroid">
+        <img src="Vienna.jpg" alt="Vienna" />
+        <div class="polaroid-label">Vienna</div>
+      </div>
+      <div class="polaroid">
+        <img src="Verona.jpg" alt="Verona" />
+        <div class="polaroid-label">Verona</div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="section-inner">
+      <div class="section-header">
+        <h2>Experience & Education</h2>
+      </div>
+      <div class="exp-columns">
+
+        <!-- LEFT: Work Experience -->
+        <div>
+          <p class="exp-col-title">Work Experience</p>
+          <div class="timeline">
+            <div class="timeline-line"></div>
+
+            <!-- SDG Consulting -->
+            <div class="tl-item" onclick="toggleItem(this)">
+              <div class="tl-dot"></div>
+              <div class="tl-header">
+                <div class="tl-meta">
+                  <span class="tl-period">10/2025 — Ongoing</span>
+                  <span class="tl-role">Data Engineer – Analyst</span>
+                  <div class="tl-company-row">
+                    <a class="tl-company" href="https://www.sdggroup.com" target="_blank" onclick="event.stopPropagation()">SDG Consulting · Full-time</a>
+                  </div>
+                </div>
+                <span class="tl-arrow">→</span>
+              </div>
+              <div class="tl-body">
+                <div class="tl-body-inner">
+                  <div class="tl-desc">
+                    <ul>
+                      <li>Development and maintenance of backend data pipelines using the Azure ecosystem (Data Factory, Databricks, Storage, SQL).</li>
+                      <li>Design and implementation of data transformation models using dbt, with a focus on modularity and analytics engineering best practices.</li>
+                      <li>Collaboration with functional teams to gather requirements and translate them into scalable data solutions.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Research Intern -->
+            <div class="tl-item" onclick="toggleItem(this)">
+              <div class="tl-dot"></div>
+              <div class="tl-header">
+                <div class="tl-meta">
+                  <span class="tl-period">02/2023 — 05/2023</span>
+                  <span class="tl-role">Research Intern</span>
+                  <div class="tl-company-row">
+                    <a class="tl-company" href="https://en.unimib.it/" target="_blank" onclick="event.stopPropagation()">Università Milano-Bicocca</a>
+                  </div>
+                </div>
+                <span class="tl-arrow">→</span>
+              </div>
+              <div class="tl-body">
+                <div class="tl-body-inner">
+                  <div class="tl-desc">
+                    <ul>
+                      <li>Collaborated directly with a university professor on a research project analyzing the drivers of European labour force participation rates (1980–2019), which successfully served as the foundation for my thesis.</li>
+                      <li>Built and structured a comprehensive longitudinal dataset from scratch, managing data collection, cleaning, and harmonization across multiple European countries.</li>
+                      <li>Applied advanced panel data econometrics techniques to model labor market dynamics and identify key macroeconomic trends.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- RIGHT: Education -->
+        <div>
+          <p class="exp-col-title">Education</p>
+          <div class="timeline">
+            <div class="timeline-line"></div>
+
+            <!-- MSc -->
+            <div class="tl-item" onclick="toggleItem(this)">
+              <div class="tl-dot"></div>
+              <div class="tl-header">
+                <div class="tl-meta">
+                  <span class="tl-period">09/2023 — 01/2026</span>
+                  <a class="tl-role" href="https://en.unimib.it/graduate/statistics-and-economics" target="_blank" onclick="event.stopPropagation()" >M.Sc. Statistical and Economic Sciences</a>
+                  <div class="tl-company-row">
+                    <span class="tl-company">Università Milano-Bicocca · 110/110 cum laude</span>
+                  </div>
+                </div>
+                <span class="tl-arrow">→</span>
+              </div>
+              <div class="tl-body">
+                <div class="tl-body-inner">
+                  <div class="tl-desc">
+                    <p>Statistics and Data Science path. Excellence-awarded department. Core courses: Machine Learning, Bayesian Statistics, Spatial Statistics, Computational Statistics.</p>
+                    <p><strong>Thesis:</strong> <em>State Space Methods for Electoral Polling</em> — developed a family of state-space models for aggregating Italian political polls (2018–2024), extending the Pelagatti–Monti framework with house effects, heteroskedastic variances, binomial measurement and structural cross-institute dependencies.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Erasmus -->
+            <div class="tl-item" onclick="toggleItem(this)">
+              <div class="tl-dot"></div>
+              <div class="tl-header">
+                <div class="tl-meta">
+                  <span class="tl-period">09/2024 — 07/2025</span>
+                  <a class="tl-role" href="https://www.tuwien.at/en/mg/swm/master-curriculum-spme" target="_blank" onclick="event.stopPropagation()" >Erasmus+ Programme</a>
+                  <div class="tl-company-row">
+                    <span class="tl-company">TU Wien · Vienna</span>
+                  </div>
+                </div>
+                <span class="tl-arrow">→</span>
+              </div>
+              <div class="tl-body">
+                <div class="tl-body-inner">
+                  <div class="tl-desc">
+                    <p>Master's programme in Statistics – Probability – Mathematics in Economics.</p>
+                    <p>Courses: Nonparametric Methods, Advanced Regression and Classification, Visual Data Science.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- BSc -->
+            <div class="tl-item" onclick="toggleItem(this)">
+              <div class="tl-dot"></div>
+              <div class="tl-header">
+                <div class="tl-meta">
+                  <span class="tl-period">09/2020 — 07/2023</span>
+                  <a class="tl-role" href="https://en.unimib.it/undergraduate/statistical-economic-sciences" target="_blank" onclick="event.stopPropagation()" >B.Sc. Statistical and Economic Sciences</a>
+                  <div class="tl-company-row">
+                    <span class="tl-company">Università Milano-Bicocca · 110/110 cum laude</span>
+                  </div>
+                </div>
+                <span class="tl-arrow">→</span>
+              </div>
+              <div class="tl-body">
+                <div class="tl-body-inner">
+                  <div class="tl-desc">
+                    <p>Insurance and Finance path. Excellence-awarded department; Scholarship for academic merits.</p>
+                    <p>Core courses: Statistics, Econometrics, Databases, Data Mining, Economic Time Series Analysis.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="section-inner">
+      <div class="section-header">
+        <h2>Technical Skills</h2>
+        
+      </div>
+      <div class="skills-bento">
+        <div class="skill-card">
+          <p class="skill-card-title">Data Engineering Tools</p>
+          <div class="skill-tags">
+            <span class="skill-tag hi">Azure Data Factory</span>
+            <span class="skill-tag hi">Databricks</span>
+            <span class="skill-tag hi">dbt</span>
+            <span class="skill-tag">Azure Storage</span>
+            <span class="skill-tag">Azure SQL</span>
+            <span class="skill-tag">Snowflake</span>
+            <span class="skill-tag">Docker</span>
+            <span class="skill-tag">Git</span>
+            <span class="skill-tag">Excel</span>
+            <span class="skill-tag">Spark</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <p class="skill-card-title">Programming Languages</p>
+          <div class="skill-tags">
+            <span class="skill-tag hi">SQL</span>
+            <span class="skill-tag hi">R</span>
+            <span class="skill-tag hi">Python</span>
+            <span class="skill-tag">LaTeX</span>
+            <span class="skill-tag">SAS</span>
+            <span class="skill-tag">Stata</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <p class="skill-card-title">Machine Learning & Statistics</p>
+          <div class="skill-tags">
+            <span class="skill-tag hi">Regression & Classification</span>
+            <span class="skill-tag hi">Neural Networks</span>
+            <span class="skill-tag hi">State Space Models</span>
+            <span class="skill-tag">Clustering</span>
+            <span class="skill-tag">Nonparametrtic Statistics</span>
+            <span class="skill-tag">Computational Statistics</span>
+            <span class="skill-tag">Panel Data Econometrics</span>
+            <span class="skill-tag">Data Mining</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <p class="skill-card-title">Visualisation Tools</p>
+          <div class="skill-tags">
+            <span class="skill-tag hi">Power BI</span>
+            <span class="skill-tag hi">Tableau</span>
+            <span class="skill-tag hi">ggplot2</span>
+            <span class="skill-tag hi">Shiny</span>
+            <span class="skill-tag hi">Plotly</span>
+          </div>
+        </div>
+        <div class="skill-card">
+          <p class="skill-card-title">Certifications</p>
+          <div class="skill-tags">
+            <a href="https://credentials.getdbt.com/51f61635-8a3b-4313-9007-c56339ee481e#acc.f9ZL7D2S" target="_blank" class="skill-tag hi cert-link">dbt Fundamentals – dbt Labs (2025)</a>
+            <a href="https://achieve.snowflake.com/24dc81d8-d4e8-419a-a7df-1aaacccf288e#acc.fdvuhqol" target="_blank" class="skill-tag hi cert-link">Data Warehousing Workshop – Snowflake (2025)</a>
+            <a href="https://learn.deeplearning.ai/accomplishments/c41c8d42-91ba-4c7c-b99a-8d323bb25e45?usp=sharing" target="_blank" class="skill-tag cert-link">Basics of AI Python Coding – DeepLearning.AI (2024)</a>
+            <!-- DataCamp dropdown -->
+            <div class="cert-dropdown-wrap">
+              <span class="skill-tag cert-dropdown-trigger" onclick="toggleCertDropdown(this)">
+                Advanced R – DataCamp (2025) ▾
+              </span>
+              <div class="cert-dropdown">
+                <a href="https://www.datacamp.com/completed/statement-of-accomplishment/course/31822661e9d49efee49bf9e56a5dfc2e3dac668b" target="_blank">Analyzing Survey Data in R</a>
+                <a href="https://www.datacamp.com/statement-of-accomplishment/course/26120e17de3415225e063045c99a81c0d7b6be78?raw=1" target="_blank">Categorical Data in the Tidyverse</a>
+                <a href="https://www.datacamp.com/statement-of-accomplishment/course/73573ecc4133a69251af311462f35f0208bb8818?raw=1" target="_blank">Cleaning Data in R</a>
+                <a href="https://www.datacamp.com/statement-of-accomplishment/course/1194ca26d5a5718dbb978807a4c30020791b4f71?raw=1" target="_blank">Data Manipulation with dplyr</a>
+                <a href="https://www.datacamp.com/completed/statement-of-accomplishment/course/1d6caef89ba51441551d64aefab8318a9bd60874" target="_blank">Experimental Design in R</a>
+                <a href="https://www.datacamp.com/statement-of-accomplishment/course/35c44f30efa145b865c531cfb051c68d6bbc60e8?raw=1" target="_blank">Intermediate Importing Data in R</a>
+                <a href="https://www.datacamp.com/statement-of-accomplishment/course/8bfead21b381cfd8873cf2293be337afc47876a7?raw=1" target="_blank">Introduction to Importing Data in R</a>
+                <a href="https://www.datacamp.com/completed/statement-of-accomplishment/course/846747742456030871e51558974005f9d53ea25a" target="_blank">Web Scraping in R</a>
+                <a href="https://www.datacamp.com/statement-of-accomplishment/course/79bec8ac6d4001826581d7fcd718b3de6ad5ac0f?raw=1" target="_blank">Working with Dates and Times in R</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS CTA -->
+  <section id="projects-cta">
+    <div class="section-inner">
+      <div class="cta-block">
+        <div>
+          <h2>Curious about<br>what I've built?</h2>
+          <p>From poll aggregation models to energy efficiency systems and basketball analytics — things I've built and learned from.</p>
+        </div>
+        <a href="projects.html" class="btn-cream">View projects</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTS -->
+  <section id="contacts">
+    <div class="section-inner">
+      <div class="section-header">
+        <h2>Let's connect.</h2>
+      </div>
+      <div class="contacts-actions">
+        <a href="mailto:giacomorabuzzi@gmail.com" class="btn-outline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="2,4 12,13 22,4"/></svg>
+          Email
+        </a>
+        <a href="https://linkedin.com/in/giacomo-rabuzzi-240336224" target="_blank" class="btn-outline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+        <a href="tel:+393474016231" class="btn-outline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.62 3.38 2 2 0 0 1 3.62 1.21h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.78a16 16 0 0 0 6.29 6.29l1.64-1.64a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.02z"/></svg>
+          (+39) 347 401 6231
+        </a>
+        <a href="https://github.com/GiacomoRabuzzi" target="_blank" class="btn-outline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+        <a href="Giacomo_Rabuzzi_CV.pdf" target="_blank" class="btn-outline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Download CV
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 Giacomo Rabuzzi</span>
+    <span>Designed & built by hand</span>
+  </footer>
+
+  <script>
+    function toggleCertDropdown(el) {
+      const dd = el.nextElementSibling;
+      dd.classList.toggle('open');
+    }
+    // Close dropdown clicking outside
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.cert-dropdown-wrap')) {
+        document.querySelectorAll('.cert-dropdown.open').forEach(d => d.classList.remove('open'));
+      }
+    });
+
+    // Custom cursor
+    const cursor = document.getElementById('custom-cursor');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+    });
+    document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
+    document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
+
+    function revealEmail() {
+      document.getElementById('email-reveal').classList.toggle('visible');
+    }
+
+    function toggleItem(el) {
+      const isOpen = el.classList.contains('open');
+      // Close all siblings in same timeline
+      const siblings = el.parentElement.querySelectorAll('.tl-item');
+      siblings.forEach(s => s.classList.remove('open'));
+      if (!isOpen) el.classList.add('open');
+    }
+  </script>
+</body>
+</html>
