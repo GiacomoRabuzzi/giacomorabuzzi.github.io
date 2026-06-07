@@ -204,8 +204,8 @@
         <h2 class="project-name">State Space Methods for Electoral Polling</h2>
         <hr class="project-divider"/>
         <p class="project-desc">
-          Master's thesis at Università Milano-Bicocca. Developed a family of state-space models to aggregate Italian political polls (2018–2024), extending the Pelagatti–Monti framework in three directions: institute-specific house effects, heteroskedastic measurement variances linked to sample size, and a structural covariance matrix capturing methodological affinities across polling organisations.<br/><br/>
-          Estimation relies on Kalman filtering, Durbin–Koopman approximations for binomial observations, and importance sampling for corrected credible intervals. Results show variance is the main driver of discrepancies across institutes, while house effects are modest (±1 pp) and party-specific. A handful of institutes — notably Ixè, Lab2101, and Tecnè — display persistent structural tilts. Smoothed vote-share trends align with well-known Italian electoral dynamics.
+          When you walk out of the polling station and check your phone, you already find ten different polls telling ten different things. Who's right? This thesis starts exactly from that question. Working with over 12,000 political polls published in Italy between 2018 and 2024 — a period that saw four governments, a pandemic, and a dramatic reshuffling of the political landscape — I built statistical models capable of separating signal from noise: distinguishing real public opinion from the imperfections of those who measure it.
+          The most surprising finding? Differences between polling institutes come far more from random error than from systematic distortion. In other words, pollsters aren't "cheating" — measuring public opinion is just genuinely hard. That said, a few institutes stand out: Tecnè, for instance, consistently overestimates Forza Italia — a pattern that's hard not to connect to the fact that its polls are frequently broadcast on Mediaset channels. The estimated trends tell a precise political story too: the rise and fall of Lega, the unstoppable climb of Fratelli d'Italia to electoral leadership, the resilience of PD, the collapse and stabilisation of M5S. All of this through a transparent, replicable framework — successfully applied to the Austrian case as well.
         </p>
         <div class="project-links">
           <a href="Tesi_Giacomo_Rabuzzi.pdf" class="project-link">View thesis</a>
@@ -284,8 +284,8 @@
         <h2 class="project-name">Drought Prediction Using Weather Data</h2>
         <hr class="project-divider"/>
         <p class="project-desc">
-          Applied regression, classification, and machine learning models — including Random Forest — to weather and drought datasets to evaluate whether automated methods can support or replace expert interpretation in drought monitoring and analysis.<br/><br/>
-          The study compared traditional statistical approaches with machine learning techniques, assessing their predictive capabilities and reliability. Drought effects are often underestimated yet critically impact agriculture, water supply, energy production, and food security. The project explored how far data-driven models can reduce the human effort required for ongoing drought analysis.
+          Can a machine replace a meteorologist? We put it to the test. Using weather data from thousands of U.S. counties, we trained a range of statistical and machine learning models — including Random Forest — to predict drought conditions without any human interpretation. 
+          Spoiler: it's harder than it sounds. Droughts are sneaky — they affect agriculture, water supply, energy and food security, yet the data is messy, imbalanced, and full of edge cases. Our models got surprisingly good at detecting whether drought was present or absent, but struggled to nail down severity. The conclusion? Automation can genuinely support expert work — but isn't ready to replace it just yet.
         </p>
         <div class="project-links">
           <a href="https://github.com/GiacomoRabuzzi/DroughtPrediction" class="project-link">View on GitHub</a>
@@ -377,8 +377,8 @@
         <h2 class="project-name">Presence Monitoring to Reduce Energy Waste</h2>
         <hr class="project-divider"/>
         <p class="project-desc">
-          Investigated indoor occupancy monitoring using non-invasive environmental sensors (CO₂, temperature, and lighting) supported by machine learning. The goal: optimize energy efficiency without dedicated occupancy hardware.<br/><br/>
-          After thorough exploratory analysis, clustering algorithms were used to identify occupancy patterns, and classification algorithms estimated the number of occupants. K-means demonstrated excellent clustering capabilities while Neural Networks achieved superior classification performance. Evaluation considered both effectiveness and computational efficiency.
+          Lights left on in an empty room. AC running with nobody there. Small inefficiencies, big waste. This project tackled a deceptively simple question: can you tell how many people are in a room using just CO₂ levels, temperature, and light — no cameras, no badges, no dedicated hardware? 
+          Turns out, yes — remarkably well. After exploring patterns in sensor data, we tested clustering and classification algorithms to estimate occupancy in real time. Neural Networks came out on top for accuracy, while K-means proved the cleanest and most efficient clustering approach. A practical, privacy-friendly blueprint for smarter buildings. 
         </p>
         <div class="project-links">
           <a href="https://github.com/GiacomoRabuzzi/MonitoringProject" class="project-link">View on GitHub</a>
@@ -462,8 +462,8 @@
         <h2 class="project-name">NBA Position Classification & Basketball's Positionless Evolution</h2>
         <hr class="project-divider"/>
         <p class="project-desc">
-          Two-objective study using NBA shooting data from 1997–98 to the present. First, classified basketball players by position using generative probabilistic models (EDDA and MDA). Second, assessed whether basketball is increasingly moving away from traditional positional roles.<br/><br/>
-          The dataset was divided into three historical "eras" and classification models trained on one era were tested on the others — revealing how well positional labels transfer across time. Results speak to the ongoing "positionless basketball" debate, offering a data-driven perspective on how the sport has evolved structurally over three decades.
+          Is "positionless basketball" actually happening, or is it just commentary hype? We went to the data to find out. Using NBA shooting statistics from 1997 to today, we built classification models to predict a player's position purely from how and where they shoot — no names, no scouting reports.
+          The models worked well for guards and centers, but forwards? Almost impossible to pin down — they really do play like everyone else. Then we split the data into three historical eras and tested models across them: a classifier trained on the late 90s barely recognizes today's players. The game has genuinely changed — and the numbers prove it.
         </p>
         <div class="project-links">
           <a href="https://github.com/GiacomoRabuzzi/BasketballProject" class="project-link">View on GitHub</a>
