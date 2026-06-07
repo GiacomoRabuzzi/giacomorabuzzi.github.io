@@ -734,40 +734,35 @@
 
     async function fetchSuggestions(q) {
       try {
-        const url = `https://api.foursquare.com/v3/places/search?query=${encodeURIComponent(q)}&categories=13000&limit=8&fields=name,location,geocodes`;
-        const res  = await fetch(url, {
-          headers: {
-            'Authorization': 'RIULDVMOZJ1LGKD31Y5UE4YNOBO3KPL0U14DXTVTI3CYISTO',
-            'Accept': 'application/json'
-          }
-        });
+        const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=8&lang=en&osm_tag=amenity:restaurant&osm_tag=amenity:bar&osm_tag=amenity:cafe`;
+        const res  = await fetch(url);
         const data = await res.json();
-        renderDropdown(data.results || []);
+        renderDropdown(data.features || []);
       } catch { dropdown.innerHTML = '<div class="autocomplete-loading">⚠️ Network error</div>'; }
     }
 
     function renderDropdown(results) {
       if (!results.length) {
-        dropdown.innerHTML = '<div class="autocomplete-loading">No results — try a different name or add the city</div>';
+        dropdown.innerHTML = '<div class="autocomplete-loading">No results — try adding the city (e.g. "Orient Experience Venezia")</div>';
         return;
       }
-      dropdown.innerHTML = results.map((r, i) => {
-        const name = r.name;
-        const loc  = r.location || {};
-        const city = loc.city || loc.locality || loc.region || '';
-        const country = loc.country || '';
+      dropdown.innerHTML = results.map(r => {
+        const p    = r.properties;
+        const name = p.name;
+        if (!name) return '';
+        const city = p.city || p.town || p.village || p.county || '';
+        const country = p.country || '';
         const cityStr = [city, country].filter(Boolean).join(', ');
-        const addr = [loc.address, city, country].filter(Boolean).join(', ');
-        const lat = r.geocodes?.main?.latitude;
-        const lng = r.geocodes?.main?.longitude;
-        if (!lat || !lng) return '';
+        const street = p.street ? `${p.street}${p.housenumber ? ' '+p.housenumber : ''}` : '';
+        const addr = [street, city, country].filter(Boolean).join(', ');
+        const [lng, lat] = r.geometry.coordinates;
         return `<div class="autocomplete-item" data-lat="${lat}" data-lng="${lng}" data-name="${name.replace(/"/g,'&quot;')}" data-city="${cityStr.replace(/"/g,'&quot;')}">
           <div class="autocomplete-item-name">${name}</div>
-          <div class="autocomplete-item-addr">${addr}</div>
+          <div class="autocomplete-item-addr">${addr || cityStr}</div>
         </div>`;
       }).filter(Boolean).join('');
       if (!dropdown.innerHTML) {
-        dropdown.innerHTML = '<div class="autocomplete-loading">No results with coordinates</div>';
+        dropdown.innerHTML = '<div class="autocomplete-loading">No results — try adding the city</div>';
         return;
       }
       dropdown.classList.add('open');
