@@ -16,7 +16,7 @@
       font-weight: inherit !important;
       line-height: inherit !important;
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --bg: #f5f3ee;
@@ -331,6 +331,11 @@
       .skill-card:nth-child(5) { grid-column: auto; }
       .cta-block { flex-direction: column; text-align: center; padding: 3rem 2rem; }
       footer { padding: 1.5rem 1.2rem; }
+    }
+
+    @media (hover: none), (pointer: coarse) {
+      #custom-cursor { display: none !important; }
+      body, a, button { cursor: auto !important; }
     }
   </style>
 </head>

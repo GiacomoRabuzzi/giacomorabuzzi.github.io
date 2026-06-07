@@ -17,7 +17,7 @@
       font-weight: inherit !important;
       line-height: inherit !important;
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --bg: #f5f3ee;
@@ -304,6 +304,11 @@
       .milan-photos { grid-template-columns: 1fr; }
       .basket-layout, .scrip-layout, .vita-layout { grid-template-columns: 1fr; gap: 2rem; }
       footer { padding: 1.5rem 1.2rem; }
+    }
+
+    @media (hover: none), (pointer: coarse) {
+      #custom-cursor { display: none !important; }
+      body, a, button { cursor: auto !important; }
     }
   </style>
 </head>
@@ -632,11 +637,15 @@
 
     const MAP_PASSWORD = 'giacomo2026';
 
-    function loadRestaurants() {
-      try { const s = localStorage.getItem(STORAGE_KEY); return s ? JSON.parse(s) : defaultRestaurants; }
-      catch { return defaultRestaurants; }
+    async function loadRestaurants() {
+      try {
+        const result = await window.storage.get(STORAGE_KEY, true);
+        return result ? JSON.parse(result.value) : defaultRestaurants;
+      } catch { return defaultRestaurants; }
     }
-    function saveToStorage(r) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(r)); } catch {} }
+    async function saveToStorage(r) {
+      try { await window.storage.set(STORAGE_KEY, JSON.stringify(r), true); } catch {}
+    }
     function starsHTML(n) { return '★'.repeat(n) + '☆'.repeat(5 - n); }
 
     let markers = []; // keep track of leaflet marker objects
@@ -665,19 +674,22 @@
       });
     }
 
-    function deleteRestaurant(index) {
+    async function deleteRestaurant(index) {
       const pwd = prompt('Enter password to remove this restaurant:');
       if (pwd !== MAP_PASSWORD) {
         if (pwd !== null) alert('Wrong password.');
         return;
       }
       restaurants.splice(index, 1);
-      saveToStorage(restaurants);
+      await saveToStorage(restaurants);
       renderMarkers();
     }
 
-    let restaurants = loadRestaurants();
-    renderMarkers();
+    let restaurants = defaultRestaurants;
+    (async () => {
+      restaurants = await loadRestaurants();
+      renderMarkers();
+    })();
 
     function promptPassword() {
       const pwd = prompt('Enter password to add a restaurant:');
@@ -801,9 +813,9 @@
       finishSave({ ...selectedPlace, stars, comment: comment || '—' });
     }
 
-    function finishSave(r) {
+    async function finishSave(r) {
       restaurants.push(r);
-      saveToStorage(restaurants);
+      await saveToStorage(restaurants);
       renderMarkers();
       map.flyTo([r.lat, r.lng], 14, { duration: 1.4 });
       closeAddModal();

@@ -15,7 +15,7 @@
       font-weight: inherit !important;
       line-height: inherit !important;
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --bg: #f5f3ee; --text: #111111; --muted: #888882; --border: #d9d7d0;
       --card-green: #d4edda; --card-yellow: #f0e88a; --card-purple: #cfc5f0;
@@ -127,6 +127,11 @@
       .project-body { padding: 1.6rem; }
       .bottom-bar { flex-direction: column; align-items: flex-start; }
       footer { padding: 1.5rem 1.2rem; }
+    }
+
+    @media (hover: none), (pointer: coarse) {
+      #custom-cursor { display: none !important; }
+      body, a, button { cursor: auto !important; }
     }
   </style>
 </head>
