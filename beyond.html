@@ -470,10 +470,7 @@
       <input type="text" id="modal-name" placeholder="e.g. Osteria del Cinghiale" />
       <label>City</label>
       <input type="text" id="modal-city" placeholder="e.g. Florence, IT" />
-      <label>Latitude</label>
-      <input type="number" id="modal-lat" placeholder="e.g. 43.7696" step="0.0001" />
-      <label>Longitude</label>
-      <input type="number" id="modal-lng" placeholder="e.g. 11.2558" step="0.0001" />
+      <div id="modal-geo-status" style="font-size:.78rem;color:var(--muted);margin-top:-.5rem;margin-bottom:.8rem;min-height:1.1rem;"></div>
       <label>Rating</label>
       <select id="modal-stars">
         <option value="5">★★★★★ Exceptional</option>
@@ -663,22 +660,51 @@
     function openAddModal() { document.getElementById('add-modal').classList.add('open'); }
     function closeAddModal() {
       document.getElementById('add-modal').classList.remove('open');
-      ['modal-name','modal-city','modal-lat','modal-lng','modal-comment'].forEach(id => document.getElementById(id).value = '');
+      ['modal-name','modal-city','modal-comment'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('modal-stars').value = '5';
+      document.getElementById('modal-geo-status').textContent = '';
     }
-    function saveRestaurant() {
-      const name = document.getElementById('modal-name').value.trim();
-      const city = document.getElementById('modal-city').value.trim();
-      const lat  = parseFloat(document.getElementById('modal-lat').value);
-      const lng  = parseFloat(document.getElementById('modal-lng').value);
-      const stars = parseInt(document.getElementById('modal-stars').value);
+
+    async function saveRestaurant() {
+      const name    = document.getElementById('modal-name').value.trim();
+      const city    = document.getElementById('modal-city').value.trim();
+      const stars   = parseInt(document.getElementById('modal-stars').value);
       const comment = document.getElementById('modal-comment').value.trim();
-      if (!name || !city || isNaN(lat) || isNaN(lng)) { alert('Please fill in name, city, latitude and longitude.'); return; }
-      const r = { name, city, lat, lng, stars, comment: comment || '—' };
+      const status  = document.getElementById('modal-geo-status');
+
+      if (!name || !city) { alert('Please fill in restaurant name and city.'); return; }
+
+      status.textContent = '🔍 Looking up coordinates…';
+      const query = encodeURIComponent(`${name}, ${city}`);
+      try {
+        const res  = await fetch(`https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1`, {
+          headers: { 'Accept-Language': 'en', 'User-Agent': 'GiacomoRabuzziSite/1.0' }
+        });
+        const data = await res.json();
+        if (!data.length) {
+          // fallback: search by city only
+          const res2  = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`, {
+            headers: { 'Accept-Language': 'en', 'User-Agent': 'GiacomoRabuzziSite/1.0' }
+          });
+          const data2 = await res2.json();
+          if (!data2.length) { status.textContent = '⚠️ Location not found. Check the city name.'; return; }
+          const lat = parseFloat(data2[0].lat), lng = parseFloat(data2[0].lon);
+          finishSave({ name, city, lat, lng, stars, comment: comment || '—' });
+        } else {
+          const lat = parseFloat(data[0].lat), lng = parseFloat(data[0].lon);
+          status.textContent = `✅ Found: ${parseFloat(lat.toFixed(4))}, ${parseFloat(lng.toFixed(4))}`;
+          finishSave({ name, city, lat, lng, stars, comment: comment || '—' });
+        }
+      } catch(e) {
+        status.textContent = '⚠️ Network error — check your connection.';
+      }
+    }
+
+    function finishSave(r) {
       restaurants.push(r);
       saveToStorage(restaurants);
       renderMarkers();
-      map.flyTo([lat, lng], 12, { duration: 1.2 });
+      map.flyTo([r.lat, r.lng], 13, { duration: 1.4 });
       closeAddModal();
     }
     document.getElementById('add-modal').addEventListener('click', function(e) { if (e.target === this) closeAddModal(); });
