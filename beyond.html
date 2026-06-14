@@ -603,14 +603,13 @@
     });
 
     const restaurants = [
-      { name: "Gasthaus Pöschl", city: "Vienna, AT", lat: 48.2082, lng: 16.3738, stars: 5, comment: "Wiener Schnitzel exactly as it should be — crispy, enormous, served with disarming simplicity. Vienna without stopping here is a mistake." },
-      { name: "Trattoria da Enzo al 29", city: "Rome, IT", lat: 41.8893, lng: 12.4722, stars: 5, comment: "Cacio e pepe so serious it makes every previous plate of it feel like a rehearsal. Tiny spot, queue outside, zero regrets." },
-      { name: "Bar Centrale", city: "Como, IT", lat: 45.8081, lng: 9.0852, stars: 4, comment: "Home. Aperitivo by the lake, a view that never gets old. Not gastronomy — affection." },
-      { name: "Zum Wohl", city: "Prague, CZ", lat: 50.0875, lng: 14.4213, stars: 4, comment: "Natural wine bar hidden down a side street. The bottle of orange wine I almost ordered by accident turned out to be a revelation." },
-      { name: "Navigante", city: "Milan, IT", lat: 45.4476, lng: 9.1747, stars: 5, comment: "Incredibly fresh fish at the Navigli canals. The kind of place where you don't look at the menu because you trust the kitchen completely." },
-      { name: "Orient Experience", city: "Venice, IT", lat: 45.4438, lng: 12.3234, stars: 5, comment: "Middle Eastern and South Asian flavours in Cannaregio — generous portions, incredibly kind staff, and an atmosphere that feels nothing like any other restaurant in Venice. A welcome detour from the Venetian classics." },
-      { name: "Taverna Greca Mykonos", city: "Milan, IT", lat: 45.4895, lng: 9.2195, stars: 5, comment: "A proper Greek taverna on the Martesana canal. The pita arrives one at a time, straight from the oven. Lamb, tzatziki, retsina — and the feeling of being somewhere entirely else for an evening." }
-    ];
+    { name: "Orient Experience", city: "Venice, IT", lat: 45.4438, lng: 12.3234, stars: 5, comment: "Middle Eastern and South Asian flavours in Cannaregio — quiet atmosphere, remarkably affordable for Venice, generous portions that always leave you full, and a menu wide enough to satisfy any urge to explore new flavours. The kind of place you return to every time you're in the city." },
+    { name: "Taverna Greca Mykonos", city: "Milan, IT", lat: 45.4895, lng: 9.2195, stars: 5, comment: "A proper Greek taverna on the Martesana canal. The starters alone are worth the visit — fried cheeses, dips, little plates that keep arriving. The mixed meat grill is exceptional. And the setting along the canal is wonderfully quiet, a rare pocket of calm in the city." },
+    { name: "Dedaspuri", city: "Pavia, IT", lat: 45.1847, lng: 9.1557, stars: 5, comment: "Georgian restaurant in the centre of Pavia and my absolute favourite restaurant, full stop. The tasting menu is the only way to go — dish after dish of things you've never tasted before, each one better than the last. Khinkali, pkhali, khachapuri — particular, extraordinary, unforgettable." },
+    { name: "Ramen Shop", city: "Milan, IT", lat: 45.4751, lng: 9.2065, stars: 5, comment: "Tiny spot near Porta Venezia where the chef pulls the noodles by hand right in front of you. The broth is deep and intensely flavoured, the pasta has real texture and bite. As close to the real thing as you'll find in Milan." },
+    { name: "Lei Poke", city: "Milan, IT", lat: 45.4775, lng: 9.2048, stars: 4, comment: "Poke bar near MM Lima — bowls that are generous, beautifully assembled and endlessly customisable. Fresh ingredients, good combinations, the kind of lunch that actually leaves you satisfied." },
+    { name: "Mi Food", city: "Pavia, IT", lat: 45.1836, lng: 9.1558, stars: 4, comment: "Artisan Chinese street food on Strada Nuova, steps from the Ponte Coperto. The bao are the reason to come — steamed buns with a sauce that fills your mouth completely, a flavour that stays with you long after you've walked away." }
+  ];
     function starsHTML(n) { return '★'.repeat(n) + '☆'.repeat(5 - n); }
 
     function renderMarkers() {
