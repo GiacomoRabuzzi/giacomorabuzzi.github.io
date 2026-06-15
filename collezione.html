@@ -1,0 +1,1433 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giacomo Rabuzzi — La Collezione</title>
+  <link rel="icon" type="image/png" href="IconcinaSito.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f5f3ee; --text: #111111; --muted: #888882; --border: #d9d7d0;
+      --card-green:#d4edda; --card-yellow:#f0e88a; --card-purple:#cfc5f0;
+      --card-blue:#c8dff5; --card-peach:#f2ddc8; --card-mint:#c8ede0;
+      --serif: "Bricolage Grotesque", sans-serif;
+      --sans: "Inter", sans-serif; --radius: 16px; --accent: #c0392b;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans);
+      font-weight: 400; overflow-x: hidden; -webkit-font-smoothing: antialiased; cursor: none; }
+    a, button { cursor: none; }
+
+    /* CURSOR */
+    #custom-cursor { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 99999;
+      transform: translate(-50%,-50%); display: flex; align-items: flex-end; gap: 2px;
+      width: 22px; height: 20px; transition: opacity .2s; }
+    #custom-cursor .bar { border-radius: 2px 2px 0 0; width: 4px; flex-shrink: 0; }
+    #custom-cursor .bar:nth-child(1) { height: 8px;  background: #c9a0dc; }
+    #custom-cursor .bar:nth-child(2) { height: 14px; background: #4caf7d; }
+    #custom-cursor .bar:nth-child(3) { height: 10px; background: #f0a500; }
+    #custom-cursor .bar:nth-child(4) { height: 18px; background: #e05c5c; }
+
+    /* ZOOM CURSOR */
+    #zoom-cursor { display: none; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 999999;
+      transform: translate(-50%,-50%); width: 44px; height: 44px;
+      border: 2.5px solid rgba(255,255,255,.9); border-radius: 50%;
+      box-shadow: 0 2px 12px rgba(0,0,0,.5); background: rgba(255,255,255,.08); backdrop-filter: blur(2px); }
+    #zoom-cursor::after { content: "+"; position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%,-50%); color: white; font-size: 18px; font-weight: 300; line-height: 1; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 3rem; height: 60px;
+      background: rgba(245,243,238,.92); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border); }
+    .nav-logo { font-family: var(--serif); font-size: 1.1rem; font-weight: 700; color: var(--text); text-decoration: none; }
+    .nav-links { display: flex; gap: .1rem; list-style: none; align-items: center; }
+    .nav-links a { font-size: .82rem; font-weight: 500; color: var(--muted); text-decoration: none;
+      padding: .4rem .85rem; border-radius: 8px; transition: color .2s, background .2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--text); background: rgba(0,0,0,.06); }
+    .nav-cta { background: var(--text) !important; color: var(--bg) !important; border-radius: 100px !important; margin-left: .4rem; }
+
+    /* PAGE HEADER */
+    .page-header { padding: 8rem 3rem 3rem; max-width: 960px; margin: 0 auto; border-bottom: 1.5px solid var(--text); }
+    .back-link { display: inline-flex; align-items: center; gap: .4rem; font-size: .8rem; font-weight: 600; color: var(--muted); text-decoration: none; margin-bottom: 1.5rem; transition: color .2s; }
+    .back-link:hover { color: var(--text); }
+    .header-row { display: flex; align-items: baseline; justify-content: space-between; gap: 2rem; }
+    .page-title { font-family: var(--serif); font-size: clamp(2.5rem,6vw,4.5rem); font-weight: 800; letter-spacing: -.03em; line-height: 1.0; }
+    .page-sub { font-size: .9rem; color: var(--muted); line-height: 1.7; max-width: 360px; text-align: right; }
+
+    /* MAIN WRAPPER */
+    .page-wrap { max-width: 960px; margin: 0 auto; padding: 3rem; }
+
+    /* STORIA PERSONALE */
+    .storia-block { margin-bottom: 3.5rem; }
+    .block-eyebrow { font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: .75rem; }
+    .storia-block h2 { font-family: var(--serif); font-size: 1.65rem; font-weight: 700;
+      letter-spacing: -.02em; margin-bottom: 1.2rem; }
+    .storia-block p { font-size: .95rem; line-height: 1.9; color: rgba(17,17,17,.75); margin-bottom: .9rem; }
+    .storia-block p:last-child { margin-bottom: 0; }
+    .storia-block strong { color: var(--text); font-weight: 600; }
+    .storia-callout { background: var(--card-peach); border-radius: 12px;
+      padding: 1.1rem 1.4rem; margin: 1.5rem 0;
+      border-left: 3px solid #d4a37a;
+      font-size: .93rem; font-style: italic; line-height: 1.8; color: rgba(17,17,17,.8); }
+
+    /* PANORAMICA / STATS */
+    .panoramica { margin-bottom: 3.5rem; }
+    .panoramica h2 { font-family: var(--serif); font-size: 1.65rem; font-weight: 700;
+      letter-spacing: -.02em; margin-bottom: .5rem; }
+    .panoramica-sub { font-size: .9rem; color: var(--muted); margin-bottom: 1.8rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 1.5rem; }
+    .stat-card { background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius);
+      padding: 1.2rem 1rem; text-align: center; }
+    .stat-card .stat-num { font-family: var(--serif); font-size: 2.2rem; font-weight: 800;
+      letter-spacing: -.04em; line-height: 1; margin-bottom: .3rem; }
+    .stat-card .stat-label { font-size: .73rem; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--muted); }
+    .stat-card.green { background: var(--card-green); }
+    .stat-card.blue  { background: var(--card-blue); }
+    .stat-card.purple{ background: var(--card-purple); }
+    .stat-card.peach { background: var(--card-peach); }
+
+    .fun-facts { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .fun-fact { background: #fff; border: 1.5px solid var(--border); border-radius: 12px;
+      padding: 1rem 1.2rem; display: flex; gap: .85rem; align-items: flex-start; }
+    .fun-fact-icon { font-size: 1.4rem; flex-shrink: 0; }
+    .fun-fact-text strong { display: block; font-size: .85rem; font-weight: 600; margin-bottom: .2rem; }
+    .fun-fact-text span { font-size: .8rem; color: var(--muted); line-height: 1.55; }
+
+    /* GUIDA */
+    .guide-block { margin-bottom: 3.5rem; }
+    .guide-block h2 { font-family: var(--serif); font-size: 1.65rem; font-weight: 700;
+      letter-spacing: -.02em; margin-bottom: .5rem; }
+    .guide-sub { font-size: .9rem; color: var(--muted); margin-bottom: 1.6rem; }
+    .guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; }
+    .guide-item { display: flex; gap: .8rem; align-items: flex-start;
+      background: #fff; border: 1.5px solid var(--border); border-radius: 10px;
+      padding: .9rem 1rem; }
+    .guide-icon { font-size: 1.25rem; flex-shrink: 0; }
+    .guide-item-text strong { display: block; font-size: .84rem; font-weight: 600; margin-bottom: .2rem; }
+    .guide-item-text span { font-size: .78rem; color: var(--muted); line-height: 1.55; }
+
+    /* DIVIDER */
+    .section-sep { border: none; border-top: 1.5px solid var(--text);
+      margin-bottom: 2.5rem; }
+    .section-label { display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 2rem; }
+    .section-label h2 { font-family: var(--serif); font-size: clamp(1.3rem,2.2vw,1.75rem);
+      font-weight: 700; letter-spacing: -.02em; }
+    .section-label span { font-size: .7rem; font-weight: 700; color: var(--muted);
+      letter-spacing: .12em; text-transform: uppercase; }
+
+    /* SCHEDA */
+    .cards-grid { display: flex; flex-direction: column; gap: 2.5rem; margin-bottom: 5rem; }
+    .scheda { background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; box-shadow: 0 3px 14px rgba(0,0,0,.07);
+      transition: box-shadow .3s, transform .3s; }
+    .scheda:hover { box-shadow: 0 10px 32px rgba(0,0,0,.12); transform: translateY(-2px); }
+
+    /* FOTO — grande, stile landscape */
+    .scheda-photo { position: relative; overflow: hidden; background: #f0ede8;
+      width: 100%; cursor: none; }
+    .scheda-photo img { width: 100%; height: 340px; object-fit: cover; display: block;
+      object-position: center top; transition: transform .4s ease; }
+    .scheda-photo:hover img { transform: scale(1.02); }
+    .zoom-hint { position: absolute; bottom: 12px; right: 14px;
+      background: rgba(0,0,0,.55); color: #fff;
+      font-size: .68rem; font-weight: 500; letter-spacing: .06em;
+      padding: 5px 11px; border-radius: 100px; pointer-events: none;
+      opacity: 0; transition: opacity .2s; }
+    .scheda-photo:hover .zoom-hint { opacity: 1; }
+
+    /* BADGE */
+    .scheda-badge { position: absolute; top: 14px; left: 14px;
+      font-size: .66rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; padding: 5px 12px; border-radius: 100px;
+      border: 1px solid rgba(0,0,0,.1); }
+    .badge-it  { background: rgba(220,240,255,.93); color: #1a5276; }
+    .badge-at  { background: rgba(255,235,200,.93); color: #784212; }
+    .badge-us  { background: rgba(210,250,225,.93); color: #1a5c35; }
+    .badge-xx  { background: rgba(240,225,255,.93); color: #5b2c8a; }
+
+    /* CONTENT */
+    .scheda-content { padding: 1.6rem 2rem; }
+    .scheda-header { margin-bottom: 1.2rem; }
+    .scheda-year { font-size: .72rem; font-weight: 600; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--muted); display: block; margin-bottom: .3rem; }
+    .scheda-title { font-family: var(--serif); font-size: 1.35rem; font-weight: 700;
+      letter-spacing: -.02em; color: var(--text); line-height: 1.2; margin-bottom: .3rem; }
+    .scheda-subtitle { font-size: .83rem; color: var(--muted); font-style: italic; }
+
+    /* CORPO SCHEDA — 3 colonne: dati | arte | note */
+    .scheda-body { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.4rem; margin-bottom: 1.2rem; }
+
+    .scheda-col-title { font-size: .68rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: .7rem;
+      padding-bottom: .4rem; border-bottom: 1px solid var(--border); }
+
+    /* Tabella dati */
+    .scheda-table { display: flex; flex-direction: column; gap: 0; }
+    .scheda-row { display: grid; grid-template-columns: 1fr 1.2fr; gap: .4rem;
+      padding: .3rem 0; border-bottom: 1px solid #f0ede8; }
+    .scheda-row:last-child { border-bottom: none; }
+    .scheda-label { font-size: .71rem; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .06em; align-self: start; padding-top: .05rem; }
+    .scheda-value { font-size: .8rem; color: var(--text); line-height: 1.45; }
+    .scheda-value.red { color: var(--accent); font-weight: 600; }
+
+    /* Colonna arte */
+    .scheda-arte p { font-size: .82rem; line-height: 1.7; color: rgba(17,17,17,.75); margin-bottom: .5rem; }
+    .scheda-arte p:last-child { margin-bottom: 0; }
+
+    /* Note / curiosità */
+    .scheda-note { background: var(--bg); border-radius: 10px;
+      padding: .9rem 1rem; border-left: 3px solid var(--border); height: fit-content; }
+    .scheda-note p { font-size: .8rem; line-height: 1.7; color: rgba(17,17,17,.75); }
+
+    /* TAGS */
+    .scheda-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
+    .scheda-tag { font-size: .68rem; font-weight: 600; padding: 3px 10px;
+      border-radius: 100px; border: 1px solid var(--border); color: var(--muted); background: var(--bg); }
+    .scheda-tag.art    { background: var(--card-purple); color: #4c1d95; border-color: transparent; }
+    .scheda-tag.econ   { background: var(--card-green);  color: #14532d; border-color: transparent; }
+    .scheda-tag.storia { background: var(--card-blue);   color: #1e3a5f; border-color: transparent; }
+    .scheda-tag.intl   { background: var(--card-peach);  color: #7c2d12; border-color: transparent; }
+    .scheda-tag.alert  { background: var(--card-yellow); color: #78350f; border-color: transparent; }
+
+    /* LIGHTBOX */
+    #lightbox { display: none; position: fixed; inset: 0; z-index: 10000;
+      background: rgba(0,0,0,.92); align-items: center; justify-content: center; cursor: none; }
+    #lightbox.active { display: flex; }
+    .lb-container { position: relative; max-width: 90vw; max-height: 90vh; overflow: hidden; touch-action: none; }
+    #lb-img { display: block; max-width: 85vw; max-height: 85vh; object-fit: contain;
+      border-radius: 6px; transform-origin: center center;
+      transition: transform .25s cubic-bezier(.2,.8,.3,1); user-select: none; pointer-events: none; }
+    .lb-close { position: fixed; top: 1.2rem; right: 1.4rem;
+      background: rgba(255,255,255,.12); border: none; color: #fff;
+      font-size: 1.5rem; width: 40px; height: 40px; border-radius: 50%; cursor: none;
+      display: flex; align-items: center; justify-content: center; transition: background .2s;
+      font-family: var(--sans); line-height: 1; }
+    .lb-close:hover { background: rgba(255,255,255,.25); }
+    .lb-info { position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,.65); color: rgba(255,255,255,.75);
+      font-size: .72rem; padding: 6px 14px; border-radius: 100px;
+      font-family: var(--sans); letter-spacing: .04em; white-space: nowrap; pointer-events: none; }
+    .lb-zoom-level { position: fixed; top: 1.2rem; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,.55); color: rgba(255,255,255,.8);
+      font-size: .7rem; padding: 4px 12px; border-radius: 100px;
+      font-family: var(--sans); letter-spacing: .06em; pointer-events: none; transition: opacity .3s; }
+
+    footer { border-top: 1px solid var(--border); padding: 1.5rem 3rem;
+      display: flex; justify-content: space-between; font-size: .78rem; color: var(--muted); }
+
+    @media (max-width: 820px) {
+      nav { padding: 0 1.2rem; } .nav-links { display: none; }
+      .page-header, .page-wrap { padding-left: 1.2rem; padding-right: 1.2rem; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .guide-grid, .fun-facts { grid-template-columns: 1fr; }
+      .scheda-body { grid-template-columns: 1fr; }
+      .scheda-photo img { height: 240px; }
+      footer { flex-direction: column; gap: .5rem; text-align: center; padding: 1.5rem 1.2rem; }
+    }
+    @media (hover: none), (pointer: coarse) {
+      #custom-cursor { display: none !important; }
+      body, a, button { cursor: auto !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="custom-cursor"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+<div id="zoom-cursor"></div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <button class="lb-close" id="lb-close">&#10005;</button>
+  <div class="lb-container" id="lb-container"><img id="lb-img" src="" alt="" draggable="false" /></div>
+  <div class="lb-zoom-level" id="lb-zoom-level">100%</div>
+  <div class="lb-info">Scroll or pinch to zoom &nbsp;·&nbsp; Drag to pan &nbsp;·&nbsp; ESC to close</div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">Giacomo Rabuzzi</a>
+  <ul class="nav-links">
+    <li><a href="index.html#experience">Experience</a></li>
+    <li><a href="index.html#skills">Skills</a></li>
+    <li><a href="projects.html">Projects</a></li>
+    <li><a href="beyond.html">Beyond the Data</a></li>
+    <li><a href="index.html#contacts" class="nav-cta">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <a class="back-link" href="beyond.html">&#8592; Beyond the Data</a>
+  <div class="header-row">
+    <h1 class="page-title">La Collezione</h1>
+    <p class="page-sub">Titoli finanziari storici raccolti insieme a mio papà — un museo di carta.</p>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- STORIA PERSONALE -->
+  <div class="storia-block" style="margin-top:3rem;">
+    <p class="block-eyebrow">Come &egrave; cominciato</p>
+    <h2>Un mercatino a Pavia, quindici euro, e una scintilla</h2>
+    <div class="storia-callout">
+      Il primo titolo l&rsquo;ho trovato per caso in un mercatino dell&rsquo;antiquariato a Pavia &mdash;
+      un Bon du Tr&eacute;sor della Repubblica Cinese del 1920, emesso a Bruxelles per finanziare una ferrovia
+      nel cuore della Cina. L&rsquo;ho pagato quindici euro. Non sapevo ancora cosa stesse guardando,
+      ma qualcosa in quel foglio &mdash; tre firme autografe in tre alfabeti diversi, una promessa di rimborso
+      mai mantenuta, un&rsquo;aquila stampata ad Anversa per un governo cinese gi&agrave; in bilico &mdash;
+      mi ha fermato.
+    </div>
+    <p>
+      Da l&igrave; ho cominciato a cercarli: su <strong>Vinted</strong>, su <strong>eBay</strong>,
+      nei mercatini. Spesso insieme a <strong>mio papà</strong>, che condivide questa strana passione per
+      i pezzi di carta che raccontano storie dimenticate. Ci siamo ritrovati a discutere di crisi bancarie
+      asburgiche, di fallimenti ferroviari cinesi e di petrolieri romagnoli come se fossero vicini di casa.
+    </p>
+    <p>
+      La collezione &egrave; in divenire &mdash; cresce quando troviamo qualcosa che vale la pena
+      raccontare. Non colleziono per completare serie o per investimento: colleziono perch&eacute;
+      ogni documento &egrave; una finestra su un mondo che non esiste pi&ugrave;.
+    </p>
+  </div>
+
+  <!-- PANORAMICA -->
+  <div class="panoramica">
+    <p class="block-eyebrow">La collezione in numeri</p>
+    <h2>Un museo di carta</h2>
+    <p class="panoramica-sub">Una selezione di fatti per orientarsi prima di sfogliare le schede.</p>
+
+    <div class="stats-grid">
+      <div class="stat-card green">
+        <div class="stat-num">6</div>
+        <div class="stat-label">Paesi emittenti</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-num">&#x7E;80</div>
+        <div class="stat-label">Anni coperti</div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Alfabeti diversi</div>
+      </div>
+      <div class="stat-card peach">
+        <div class="stat-num">1</div>
+        <div class="stat-label">Default ancora aperto</div>
+      </div>
+    </div>
+
+    <div class="fun-facts">
+      <div class="fun-fact">
+        <div class="fun-fact-icon">🇨🇳</div>
+        <div class="fun-fact-text">
+          <strong>Il default pi&ugrave; lungo della storia</strong>
+          <span>Il Bon du Tr&eacute;sor cinese del 1920 &egrave; andato in default nel 1938 e tecnicamente non &egrave; mai stato rimborsato. Chi lo possiede ha un credito teorico verso la Repubblica Popolare Cinese. Irrecuperabile &mdash; ma esistente.</span>
+        </div>
+      </div>
+      <div class="fun-fact">
+        <div class="fun-fact-icon">🥐</div>
+        <div class="fun-fact-text">
+          <strong>Valore rimborsato: un panino imburrato</strong>
+          <span>La Kriegsanleihe austro-ungarica del 1915 da 10.000 Corone &mdash; dieci anni di stipendio operaio &mdash; fu rimborsata dopo l&rsquo;iperinflazione del 1923 al valore reale di un panino. Letteralmente.</span>
+        </div>
+      </div>
+      <div class="fun-fact">
+        <div class="fun-fact-icon">👤</div>
+        <div class="fun-fact-text">
+          <strong>Un investitore milanese degli anni &rsquo;80</strong>
+          <span>Acetti Paride, nato a Milano il 27/3/1921, Via dell&rsquo;Annunciata 31, compare come intestatario in quattro documenti diversi della collezione: Frigoriferi Milanesi, Autostrade Meridionali, Gerolimich e Balzaretti Modigliani.</span>
+        </div>
+      </div>
+      <div class="fun-fact">
+        <div class="fun-fact-icon">✈️</div>
+        <div class="fun-fact-text">
+          <strong>Pan Am al suo apice assoluto</strong>
+          <span>Il certificato azionario Pan Am &egrave; del 21 giugno 1968 &mdash; quando la compagnia operava in 87 paesi su 6 continenti. Tre anni dopo Lockerbie, e poi il fallimento il 4 dicembre 1991: meno di un&rsquo;ora dall&rsquo;apertura degli uffici.</span>
+        </div>
+      </div>
+      <div class="fun-fact">
+        <div class="fun-fact-icon">🎨</div>
+        <div class="fun-fact-text">
+          <strong>La stessa tipografia su due titoli distanti 50 anni</strong>
+          <span>Tacchinardi &amp; Ferrari di Pavia stamp&ograve; sia il Prestito 1905 che il Prestito 1911 della Citt&agrave; di Pavia &mdash; riutilizzando le stesse lastre calcografiche, cambiando solo data e importo.</span>
+        </div>
+      </div>
+      <div class="fun-fact">
+        <div class="fun-fact-icon">📜</div>
+        <div class="fun-fact-text">
+          <strong>Il pi&ugrave; costoso: 15 euro</strong>
+          <span>Il pezzo che ha dato inizio a tutto &mdash; il Bon du Tr&eacute;sor cinese trovato a caso a Pavia &mdash; &egrave; costato quindici euro. La maggior parte degli altri &egrave; stata trovata su Vinted o eBay per cifre simili.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GUIDA -->
+  <div class="guide-block">
+    <p class="block-eyebrow">Come leggere le schede</p>
+    <h2>Una piccola bussola</h2>
+    <p class="guide-sub">Ogni scheda ha tre sezioni. Ecco come leggerle.</p>
+    <div class="guide-grid">
+      <div class="guide-item">
+        <div class="guide-icon">📸</div>
+        <div class="guide-item-text">
+          <strong>Foto del documento</strong>
+          <span>Clicca sull&rsquo;immagine per aprirla a schermo intero. Rotella del mouse (o pizzico) per zoomare fino ai dettagli: firme, timbri, filigrane, guilloché antifalsificazione.</span>
+        </div>
+      </div>
+      <div class="guide-item">
+        <div class="guide-icon">📋</div>
+        <div class="guide-item-text">
+          <strong>Dati del documento</strong>
+          <span>Tipo di titolo, emittente, data, valore nominale, intestatario. In rosso: il valore finanziario attuale (quasi sempre nullo).</span>
+        </div>
+      </div>
+      <div class="guide-item">
+        <div class="guide-icon">🎨</div>
+        <div class="guide-item-text">
+          <strong>Descrizione artistica</strong>
+          <span>Cosa si vede nel documento: tecnica di stampa, palette cromatica, vignette, stile grafico, stampatore. Ogni titolo &egrave; anche un&rsquo;opera grafica.</span>
+        </div>
+      </div>
+      <div class="guide-item">
+        <div class="guide-icon">📝</div>
+        <div class="guide-item-text">
+          <strong>Note storiche e curiosit&agrave;</strong>
+          <span>Il contesto storico, la storia successiva dell&rsquo;emittente, i dettagli insoliti. Spesso la parte pi&ugrave; interessante.</span>
+        </div>
+      </div>
+      <div class="guide-item">
+        <div class="guide-icon">🏷️</div>
+        <div class="guide-item-text">
+          <strong>Badge geografico</strong>
+          <span><span style="color:#1a5276;font-weight:600">Italia</span> &nbsp;·&nbsp; <span style="color:#784212;font-weight:600">Austria/Impero</span> &nbsp;·&nbsp; <span style="color:#1a5c35;font-weight:600">USA</span> &nbsp;·&nbsp; <span style="color:#5b2c8a;font-weight:600">Internazionale</span></span>
+        </div>
+      </div>
+      <div class="guide-item">
+        <div class="guide-icon">💰</div>
+        <div class="guide-item-text">
+          <strong>Stima collezionistica</strong>
+          <span>Valore indicativo sul mercato della scripofilia &mdash; non finanziario. Basato su titoli analoghi su eBay, Scripomuseum e aste specializzate.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TITOLI -->
+  <hr class="section-sep" />
+  <div class="section-label">
+    <h2>I Titoli</h2>
+    <span>In ordine cronologico</span>
+  </div>
+
+  <div class="cards-grid">
+
+
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Chemin_de_Fer_Cina.jpg', 'Gouvernement de la République Chinoise')">
+        <img src="Chemin_de_Fer_Cina.jpg" alt="Gouvernement de la République Chinoise" loading="lazy" />
+        <span class="scheda-badge badge-xx">🌍 Cina · Belgio</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">1° settembre 1920</span>
+          <h3 class="scheda-title">Gouvernement de la République Chinoise</h3>
+          <span class="scheda-subtitle">Bon du Trésor 8% · Chemin de Fer Lung-Tsing-U-Haï · Bruxelles</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Bon du Trésor — obbligazione di Stato</span></div>
+<div class="scheda-row"><span class="scheda-label">N.</span><span class="scheda-value">048.861</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">Fr. 500 (emissione: Fr. 50.000.000)</span></div>
+<div class="scheda-row"><span class="scheda-label">Tasso</span><span class="scheda-value">8% annuo — rimborso previsto 1930</span></div>
+<div class="scheda-row"><span class="scheda-label">Stampatore</span><span class="scheda-value">J. Verschueren, Anvers-Bruxelles</span></div>
+<div class="scheda-row"><span class="scheda-label">Firme</span><span class="scheda-value">3 autografi: Min. cinese + Dir.Gen. ferrovia + Delegato belga</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Default 1938 — tecnicamente ancora insoluto</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 30–80</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Cromolitografia arancio/salmone su carta avorio — uno dei colori più caldi della collezione. Bordura a doppia cornice guilloché con medaglioni agli angoli.</p><p>Il testo è interamente in francese — la lingua diplomatica internazionale del 1920. Le firme dei funzionari cinesi sono autografe in caratteri cinesi, un contrasto visivamente potente sul documento europeo.</p><p>Stampato ad Anversa dalla Veuve Monnom (la stessa casa della Pologne 1923): tipografia belga specializzata in titoli internazionali.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>Il primo titolo che ho comprato — quindici euro a un mercatino di Pavia, per caso. Tre firme in tre alfabeti diversi (francese, cinese corsivo, belga) su un foglio stampato ad Anversa per una ferrovia a 8.000 km. La ferrovia Lunghai (1.800 km est-ovest) fu completata solo nel 1953 dalla Repubblica Popolare. La Repubblica Cinese andò in default nel 1938; la RPC nega qualsiasi responsabilità. Chi lo possiede ha teoricamente un credito ancora aperto verso la Cina.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag intl">🌏 3 firme in 3 alfabeti</span><span class="scheda-tag alert">⚠️ Default 1938 — mai rimborsato</span><span class="scheda-tag storia">🚂 Via della Seta ferroviaria</span><span class="scheda-tag storia">📌 Il primo della collezione</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Kriegsanleihe.jpg', 'Dritte Österreichische Kriegsanleihe 5,5%')">
+        <img src="Kriegsanleihe.jpg" alt="Dritte Österreichische Kriegsanleihe 5,5%" loading="lazy" />
+        <span class="scheda-badge badge-at">🇦🇹 Austria-Ungheria</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">1° ottobre 1915</span>
+          <h3 class="scheda-title">Dritte Österreichische Kriegsanleihe 5,5%</h3>
+          <span class="scheda-subtitle">Terzo Prestito di Guerra Austriaco — Wien — 10.000 Corone</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Titolo di Stato — prestito di guerra</span></div>
+<div class="scheda-row"><span class="scheda-label">Serie / N.</span><span class="scheda-value">Serie E / N. 038.675</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">10.000 Corone austro-ungariche</span></div>
+<div class="scheda-row"><span class="scheda-label">Tasso</span><span class="scheda-value">5,5% annuo — scadenza prevista 1930</span></div>
+<div class="scheda-row"><span class="scheda-label">Firmato da</span><span class="scheda-value">Wilhelm Ritter von Engel (k.k. Finanzminister)</span></div>
+<div class="scheda-row"><span class="scheda-label">Controllo</span><span class="scheda-value">Staatsschulden-Kontrollkommission des Reichsrates</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo — azzerato da iperinflazione 1921–23</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 40–150</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Jugendstil viennese di altissima qualità: il più raffinato stilisticamente della collezione. Bordura con motivi vegetali intrecciati (girasoli stilizzati, spirali, fogliami) tipici della Secessione viennese.</p><p>L'aquila bicipite degli Asburgo con corona imperiale campeggia in posizione centrale superiore — un simbolo scomparso tre anni dopo l'emissione. In basso, una figura femminile allegorica (Austria personificata) in cartiglio ovale in stile tardo-neoclassico.</p><p>"KRIEGSANLEIHE" in caratteri Fraktur monumentali. Testo in tedesco, stampa di qualità superiore a molti titoli privati coevi.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>Il documento più antico della collezione. Il taglio da 10.000 Corone equivaleva a oltre dieci anni di stipendio operaio. Emesso mentre l'esercito combatteva su tre fronti (russo, italiano, serbo), prometteva il rimborso nel 1930. Con il crollo dell'impero nel 1918 e l'iperinflazione del 1921–23, queste obbligazioni furono rimborsate al valore reale di «un panino imburrato». L'aquila bicipite è scomparsa come entità politica nel novembre 1918 — tre anni dopo.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag art">🎨 Jugendstil — il più bello stilisticamente</span><span class="scheda-tag storia">🏛️ Prima Guerra Mondiale</span><span class="scheda-tag alert">⚠️ Valore azzerato da iperinflazione</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Pavia_1905.jpg', 'Città di Pavia — Prestito 1905')">
+        <img src="Pavia_1905.jpg" alt="Città di Pavia — Prestito 1905" loading="lazy" />
+        <span class="scheda-badge badge-it">🇮🇹 Italia</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">1° gennaio 1906</span>
+          <h3 class="scheda-title">Città di Pavia — Prestito 1905</h3>
+          <span class="scheda-subtitle">Obbligazione municipale da L. 100 · Emissione totale L. 2.200.000</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Obbligazione al portatore (poi nominativa)</span></div>
+<div class="scheda-row"><span class="scheda-label">Serie / N.</span><span class="scheda-value">Serie 105 / N. 4170</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">Lire 100 italiane</span></div>
+<div class="scheda-row"><span class="scheda-label">Rendimento</span><span class="scheda-value">4% (primi 5 anni) → 3,5% (successivi)</span></div>
+<div class="scheda-row"><span class="scheda-label">Stampatore</span><span class="scheda-value">Tacchinardi &amp; Ferrari, Pavia</span></div>
+<div class="scheda-row"><span class="scheda-label">Timbro banca</span><span class="scheda-value">Banca Nazionale del Lavoro — Pavia</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 30–100</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Cromolitografia in verde oliva/verde scuro su carta avorio — palette sobria e imperiale. Figura allegorica femminile con corona radiante al centro (allegoria di Italia o Minerva), seduta tra vignette industriali.</p><p>Bordura elaborata con colonne neoclassiche, medaglioni con mascheroni, fregi a palmette. In basso, vignette del Castello Visconteo di Pavia. I medaglioni laterali recano le scritte «Commercio» e «Industria».</p><p>Stesso stampatore (Tacchinardi &amp; Ferrari) e stessa lastra del Prestito 1911 — solo data e importo cambiati. Stile Liberty/Belle Époque tipico dei titoli municipali italiani del primo '900.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>Originariamente «al portatore» — chiunque lo detenesse fisicamente poteva riscuoterlo. Fu trasformato in nominativo il 3 luglio 1921 e intestato a «Novescala» (residente a Pavia): riflette le leggi postbelliche contro l'anonimato finanziario. Nel 1905 Pavia era in piena espansione: nello stesso anno nasceva la SNIA Viscosa, prima fabbrica italiana di seta artificiale.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag art">🎨 Cromolitografia Belle Époque</span><span class="scheda-tag storia">🏛️ Italia giolittiana</span><span class="scheda-tag storia">📜 Trasformato nominativo 1921</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Ancona.jpg', 'Tramvie ed Imprese Elettriche di Ancona')">
+        <img src="Ancona.jpg" alt="Tramvie ed Imprese Elettriche di Ancona" loading="lazy" />
+        <span class="scheda-badge badge-it">🇮🇹 Italia</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">1° luglio 1908</span>
+          <h3 class="scheda-title">Tramvie ed Imprese Elettriche di Ancona</h3>
+          <span class="scheda-subtitle">Certificato al portatore · 5 azioni (nn. 871–875) · N. 575</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Certificato azionario al portatore</span></div>
+<div class="scheda-row"><span class="scheda-label">Azioni</span><span class="scheda-value">5 (nn. 871–875)</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">L. 100/az. — totale L. 500</span></div>
+<div class="scheda-row"><span class="scheda-label">Capitale</span><span class="scheda-value">L. 550.000 (espandibile a L. 1.500.000)</span></div>
+<div class="scheda-row"><span class="scheda-label">Stampatore</span><span class="scheda-value">Maumus Torre e Pozzu, Torino</span></div>
+<div class="scheda-row"><span class="scheda-label">Timbro</span><span class="scheda-value">ANNULLATO (timbro viola)</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 40–120</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Il più bello graficamente della collezione: cromolitografia Liberty pesca/salmone su carta avorio con bordi geometrici in verde scuro. Impatto visivo immediato e gioioso.</p><p>Figura centrale: Mercurio alato che regge un fascio di fulmini — allegoria perfetta dell'elettricità e dei trasporti. In basso, una splendida vignetta di un tram elettrico in corsa per le vie di Ancona, con dettaglio architettonico.</p><p>I quattro angoli recano i numeri «5» in medaglioni ornati. Le colonne laterali sono intarsiate con elementi floreali Liberty. Stampatore torinese Maumus — specialista in titoli Belle Époque.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>La società fu costituita il 21 giugno 1908 — questo documento è datato 1° luglio 1908: quasi coevo alla fondazione stessa. Il tram inaugurò il servizio il 19 ottobre 1909. Presidente: Giovanni Tramplerij; Amministratore: Francesco Rossi. Nel 1933 il Comune riscattò la rete; nel 1943 passò all'Azienda Tranviaria Municipale. Il timbro ANNULLATO in viola certifica che il titolo fu regolarmente ritirato.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag art">🎨 Liberty — il più bello graficamente</span><span class="scheda-tag storia">🚋 Prima rete tramviaria elettrica di Ancona</span><span class="scheda-tag storia">🏛️ Italia di Giolitti</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Phenix.jpg', 'Oesterreichischer Phönix in Wien')">
+        <img src="Phenix.jpg" alt="Oesterreichischer Phönix in Wien" loading="lazy" />
+        <span class="scheda-badge badge-at">🇦🇹 Austria-Ungheria</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">15 marzo 1911</span>
+          <h3 class="scheda-title">Oesterreichischer Phönix in Wien</h3>
+          <span class="scheda-subtitle">k.k. privilegirte Lebensversicherungs-Gesellschaft · bilingue DE/FR</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Aktie / Action — al portatore</span></div>
+<div class="scheda-row"><span class="scheda-label">N.</span><span class="scheda-value">14.099</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">200 Corone austro-ungariche</span></div>
+<div class="scheda-row"><span class="scheda-label">Privilegio</span><span class="scheda-value">Kaiserlich-Königlich (k.k.) — privilegio imperiale</span></div>
+<div class="scheda-row"><span class="scheda-label">Stampatore</span><span class="scheda-value">K. Trull &amp; Sohn, k.u.k. Hof-Buchdruckerei, Wien</span></div>
+<div class="scheda-row"><span class="scheda-label">Note</span><span class="scheda-value">Talloncino rosso: riconversione Gulden → Corone (ris. 1892)</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo — Phönix-Skandal 1936</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 20–70</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Documento bilingue con struttura a colonne parallele speculari: tedesco a sinistra (in Fraktur), francese a destra (in caratteri latini). La grafica bilaterale riflette il cosmopolitismo asburgico.</p><p>Palette beige/avorio con ornamenti in ocra. Cartigli ovali con il valore «ZWEIHUNDERT KRONEN / DEUX CENTS COURONNES» enfatizzato centralmente. Stampa k.u.k. Hof-Buchdruckerei — tipografia di corte imperiale, la più prestigiosa categoria in Austria.</p><p>Il talloncino rosso incollato in alto a sinistra registra la delibera assembleare di riconversione da Gulden a Corone — riforma monetaria austro-ungarica del 1892. Un intervento fisico sul documento che aggiunge uno strato storico visibile.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>La più grande compagnia di assicurazioni sulla vita d'Europa nel 1930, con 330.000 assicurati in 22 paesi. Nel 1936 crollò nel «Phönix-Skandal»: buco da 250 milioni di Scellini (5% del reddito nazionale austriaco), originato dalle perdite della Prima Guerra Mondiale sistematicamente occultate per vent'anni. Il direttore Wilhelm Berliner era morto il 17 febbraio 1936 — poche settimane prima che tutto emergesse. Lo scandalo contribuì alla destabilizzazione dell'Austria che portò all'Anschluss.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag art">🎨 Jugendstil imperiale — bilingue DE/FR</span><span class="scheda-tag storia">🏛️ Phönix-Skandal 1936</span><span class="scheda-tag alert">⚠️ 330.000 assicurati danneggiati</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Pavia_1911.jpg', 'Città di Pavia — Prestito 1911')">
+        <img src="Pavia_1911.jpg" alt="Città di Pavia — Prestito 1911" loading="lazy" />
+        <span class="scheda-badge badge-it">🇮🇹 Italia</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">29 novembre 1917</span>
+          <h3 class="scheda-title">Città di Pavia — Prestito 1911</h3>
+          <span class="scheda-subtitle">Obbligazione nominativa · Intestata alla Civica Scuola di Pittura di Pavia</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Obbligazione nominativa municipale</span></div>
+<div class="scheda-row"><span class="scheda-label">Serie / N.</span><span class="scheda-value">Serie 007 / N. 0256</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">Lire 100 italiane</span></div>
+<div class="scheda-row"><span class="scheda-label">Intestatario</span><span class="scheda-value">Civica Scuola di Pittura di Pavia</span></div>
+<div class="scheda-row"><span class="scheda-label">Stampatore</span><span class="scheda-value">Tacchinardi &amp; Ferrari, Pavia</span></div>
+<div class="scheda-row"><span class="scheda-label">Timbro</span><span class="scheda-value">Banca Nazionale del Lavoro — Il Cassiere</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 80–200+</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Gemello cromatico del Prestito 1905: stessa lastra calcografica di Tacchinardi &amp; Ferrari, variante in verde oliva più chiaro (invece del verde scuro del 1905). La firma è del 1917 ma il titolo fu deliberato nel 1911.</p><p>Stessa figura allegorica centrale con corona radiante, stesse colonne neoclassiche, stesse vignette del Castello Visconteo. La continuità iconografica tra le due emissioni era deliberata: il Comune di Pavia voleva che i risparmiatori riconoscessero immediatamente il «marchio» del prestito municipale.</p><p>Bollo fiscale da L. 1,20 (marca Candiali) in alto a sinistra. Timbro del sigillo del Comune di Pavia. Cinque firme autografe: Sindaco, Assessore, Segretario Generale, Prefetto, Ragioniere Capo.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>Due particolarità eccezionali in un solo documento. Prima: è intestato alla <strong>Civica Scuola di Pittura di Pavia</strong> (fondata 1842, lascito di Defendente Sacchi), che formò pittori come Tranquillo Cremona e Federico Faruffini — una scuola d'arte che investiva i propri fondi in obbligazioni municipali. Seconda: la firma è del <strong>29 novembre 1917</strong> — esattamente un mese dopo Caporetto, la più grande sconfitta militare italiana. Il Comune firma documenti finanziari ordinari mentre il Paese è in ginocchio.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag art">🎨 Gemello del Prestito 1905</span><span class="scheda-tag storia">🖼️ Intestata alla Civica Scuola di Pittura</span><span class="scheda-tag storia">🏛️ Firmato dopo Caporetto — nov. 1917</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Societa_elettrica_Polonia.jpg', 'Société d'Entreprises Électriques en Pologne')">
+        <img src="Societa_elettrica_Polonia.jpg" alt="Société d'Entreprises Électriques en Pologne" loading="lazy" />
+        <span class="scheda-badge badge-xx">🌍 Belgio · Polonia</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">Settembre 1923</span>
+          <h3 class="scheda-title">Société d'Entreprises Électriques en Pologne</h3>
+          <span class="scheda-subtitle">Action de capital · Fr. 250 · Bruxelles — Electropol</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Azione al portatore</span></div>
+<div class="scheda-row"><span class="scheda-label">N.</span><span class="scheda-value">59.759</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">Fr. 250 · capitale tot. Fr. 20.000.000</span></div>
+<div class="scheda-row"><span class="scheda-label">Stampatore</span><span class="scheda-value">Imprimerie Veuve Monnom, Bruxelles</span></div>
+<div class="scheda-row"><span class="scheda-label">Aumento cap.</span><span class="scheda-value">Fr. 20M → 30M (atto notarile 19/3/1927, n. 3009)</span></div>
+<div class="scheda-row"><span class="scheda-label">Timbri viola</span><span class="scheda-value">Delibera assembleare + Moniteur Belge</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 15–50</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Stile Art Nouveau belga anni '20: bordure geometriche e fitomorfe in verde-turchese su carta avorio, molto sobrie ed eleganti rispetto all'esuberanza italiana coeva.</p><p>I due timbri viola rettangolari sovrapposti documentano visivamente l'aumento di capitale del 1927: uno è la delibera assembleare, l'altro la pubblicazione sul Moniteur Belge. La stratificazione dei timbri rende il documento leggibile come una timeline fisica.</p><p>Stato di conservazione ridotto da strappi e umidità — il più fragile della collezione. Stampato dalla Veuve Monnom di Bruxelles, stessa tipografia del Bon Chinois.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>Filiale belga per l'elettrificazione della Polonia rinata come Stato nel 1918. Il Belgio degli anni '20 era il principale esportatore mondiale di capitali per infrastrutture elettriche e tramviarie: finanziava reti in Polonia, Romania, Egitto, Siria. La società crebbe rapidamente — l'aumento di capitale del 1927 portò il totale da Fr. 20M a Fr. 30M, con 40.000 nuove azioni. Poi arrivò il 1929 e tutto cambiò.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag econ">📈 Capitalismo belga anni '20</span><span class="scheda-tag storia">🏛️ Polonia post-1918</span><span class="scheda-tag storia">⚡ Elettrificazione Europa Est</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Credit_Foncier.jpg', 'Allg. Österr. Boden-Credit-Anstalt')">
+        <img src="Credit_Foncier.jpg" alt="Allg. Österr. Boden-Credit-Anstalt" loading="lazy" />
+        <span class="scheda-badge badge-at">🇦🇹 Austria</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">Maggio 1926</span>
+          <h3 class="scheda-title">Allg. Österr. Boden-Credit-Anstalt</h3>
+          <span class="scheda-subtitle">Société Générale du Crédit Foncier d'Autriche · bilingue DE/FR</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Aktie / Action — al portatore</span></div>
+<div class="scheda-row"><span class="scheda-label">N.</span><span class="scheda-value">533.096</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">50 Scellini austriaci</span></div>
+<div class="scheda-row"><span class="scheda-label">Fondazione</span><span class="scheda-value">1863 — banca ipotecaria imperiale</span></div>
+<div class="scheda-row"><span class="scheda-label">Firma</span><span class="scheda-value">Rudolf Sieghart (Gouverneur)</span></div>
+<div class="scheda-row"><span class="scheda-label">Stampatore</span><span class="scheda-value">Brüder Rosenbaum, Wien VI</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo — assorbita forzosamente 1929</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 25–60</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Post-Jugendstil / Wiener Werkstätte anni '20: grafica razionalista con reminiscenze dell'eleganza imperiale. Blu indaco su carta avorio — bicolore sobrio e austero, molto diverso dai verdi della Kriegsanleihe e dai beige del Phönix.</p><p>Struttura bilingue speculare DE/FR (come il Phönix del 1911) — il fantasma del cosmopolitismo asburgico che sopravvive otto anni dopo la fine dell'impero. I due cartigli rettangolari al centro evidenziano il valore «FÜNFZIG 50 SCHILLING / CINQUANTE 50 SCHILLINGS».</p><p>Brüder Rosenbaum di Vienna era una delle principali stamperie viennesi di titoli finanziari, attiva dalla fine dell'Ottocento fino agli anni '30. La qualità esecutiva è alta, più sobria ma non meno raffinata del Jugendstil precedente.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>La banca che gestiva i patrimoni degli Asburgo, fondata nel 1863. La firma appartiene a Rudolf Sieghart (1866–1934), governatore dal 1910, che aveva sfidato la Creditanstalt dei Rothschild acquisendo partecipazioni in decine di industrie austriache. Tre anni dopo questo documento fu assorbita forzosamente dalla Creditanstalt — che fallì a sua volta nel 1931, innescando la crisi bancaria europea e, secondo molti storici, accelerando l'ascesa del nazismo. Sieghart morì nel 1934, l'anno dell'instaurazione del regime austrofascista.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag storia">🏛️ Crisi bancaria europea 1929–31</span><span class="scheda-tag intl">🌍 Bilingue DE/FR post-imperiale</span><span class="scheda-tag econ">📈 Finanza asburgica</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Venchi.jpg', 'Venchi-Unica S.A. Prodotti Dolciari ed Affini')">
+        <img src="Venchi.jpg" alt="Venchi-Unica S.A. Prodotti Dolciari ed Affini" loading="lazy" />
+        <span class="scheda-badge badge-it">🇮🇹 Italia</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">1941</span>
+          <h3 class="scheda-title">Venchi-Unica S.A. Prodotti Dolciari ed Affini</h3>
+          <span class="scheda-subtitle">Azioni privilegiate · Torino · multipli aumenti di capitale</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Cert. azionario nominativo — privilegiate</span></div>
+<div class="scheda-row"><span class="scheda-label">N.</span><span class="scheda-value">054.048</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">L. 25 per azione</span></div>
+<div class="scheda-row"><span class="scheda-label">Capitale</span><span class="scheda-value">L. 37.200.000 (1.488.000 az. da L. 25)</span></div>
+<div class="scheda-row"><span class="scheda-label">Stampatore</span><span class="scheda-value">P. Gros, Torino</span></div>
+<div class="scheda-row"><span class="scheda-label">Sovrastampe</span><span class="scheda-value">Multipli aumenti cap. in rosso (fino al 1963)</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo — fallimento 1978</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 30–90</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Il più vivace cromaticamente della collezione italiana: bordeaux/vinaccia intenso su carta avorio, quasi aggressivo nel suo impatto visivo. Bordura con cartocci barocchi, volute e fogliami elaborati — stile eclettico tipico della grande industria torinese degli anni '30.</p><p>Monogramma «VU» intrecciato in cartiglio ovale con corona — brand identity elegante che campeggia in basso al centro. Il documento è coperto da grandi testi rossi sovrastampati che documentano gli aumenti di capitale fino al 1963: una stratigrafia visiva unica in collezione.</p><p>Il campo del numero di azioni in basso è compilato a mano. Due figure allegoriche in filigrana centrale. Stampatore P. Gros di Torino — tipografia commerciale torinese degli anni '30–'40.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>Nata dalla fusione (1934) tra la Venchi (1878) e l'Unica di Riccardo Gualino — finanziere antifascista mandato al confino da Mussolini nel 1931 per le sue attività e il suo aperto antifascismo. Lo stabilimento di 100.000 mq impiegava 3.000 operaie torinesi. Emesso nel 1941 con l'Italia in guerra su tre fronti. Il 25 aprile 1945 lo stabilimento fu teatro di una sparatoria tra operai e una divisione tedesca. Le azioni «privilegiate» garantivano un dividendo prioritario ma nessun diritto di voto in assemblea.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag art">🎨 Barocchetto torinese anni '40</span><span class="scheda-tag storia">🏛️ Seconda Guerra Mondiale</span><span class="scheda-tag storia">🍫 Gualino — antifascismo — 1978</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Sarom.jpg', 'SAROM 99 S.p.A.')">
+        <img src="Sarom.jpg" alt="SAROM 99 S.p.A." loading="lazy" />
+        <span class="scheda-badge badge-it">🇮🇹 Italia</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">Febbraio 1957</span>
+          <h3 class="scheda-title">SAROM 99 S.p.A.</h3>
+          <span class="scheda-subtitle">Prestito obbligazionario 7% · 500 obbligazioni cumulative · Milano</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Obbligazione al portatore cumulativa</span></div>
+<div class="scheda-row"><span class="scheda-label">Titolo N.</span><span class="scheda-value">3711</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">L. 500.000 (500 × L. 1.000)</span></div>
+<div class="scheda-row"><span class="scheda-label">Rimborso</span><span class="scheda-value">12 annualità: 1° dic.1961 → 1° dic.1972</span></div>
+<div class="scheda-row"><span class="scheda-label">Stampatore</span><span class="scheda-value">Brevetti Calcografia &amp; Cartevalori, Milano</span></div>
+<div class="scheda-row"><span class="scheda-label">Oggetto soc.</span><span class="scheda-value">Commercio ingrosso/minuto prodotti da oli minerali</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo — rimborsato entro 1972</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 20–70</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Calcografia (incisione su lastra metallica) di buona qualità — tecnica più pregiata dell'offset per titoli privati italiani del dopoguerra. Bordeaux/marrone vinaccia su carta avorio.</p><p>Logo SAROM 99 in ovale prominente con il «99» in grande al centro — il numero di ottano della benzina come identità aziendale. In filigrana centrale, la vignetta di un impianto industriale (probabilmente la raffineria di Ravenna). Bordura guilloché con motivi a intreccio geometrico antifalsificazione.</p><p>Bollo fiscale da 600 lire (bollo «XII Seicento Lire», serie e categoria tariffaria fiscale italiana). Stesso stampatore (Brevetti Calcografia) della scheda Motta del 1969.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>Il «99» non è un codice societario: è il numero di ottano della benzina SAROM — una super-premium per l'epoca. Attilio Monti, fondatore, partì come venditore porta a porta in Romagna e divenne uno dei grandi petrolieri privati italiani. Nel 1959 inaugurò a Milano la Torre Galfa. La rete di 700 pompe fu ceduta alla British Petroleum nello stesso anno di questo certificato (1957) in cambio dell'esclusiva per raffinare il petrolio BP in Italia. Il taglio da 500 obbligazioni era tipico degli investitori istituzionali.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag econ">📈 Miracolo economico italiano</span><span class="scheda-tag storia">⛽ Il «99» = numero di ottano</span><span class="scheda-tag storia">🏭 Torre Galfa — Attilio Monti</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Motta.jpg', 'Motta S.p.A. per l'Industria Dolciaria ed Alimentare')">
+        <img src="Motta.jpg" alt="Motta S.p.A. per l'Industria Dolciaria ed Alimentare" loading="lazy" />
+        <span class="scheda-badge badge-it">🇮🇹 Italia</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">30 maggio 1969</span>
+          <h3 class="scheda-title">Motta S.p.A. per l'Industria Dolciaria ed Alimentare</h3>
+          <span class="scheda-subtitle">Certificato cumulativo · 100 azioni · Milano</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Certificato azionario nominativo cumulativo</span></div>
+<div class="scheda-row"><span class="scheda-label">N.</span><span class="scheda-value">153.312</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">L. 3.000/az. (× 100 = L. 300.000)</span></div>
+<div class="scheda-row"><span class="scheda-label">Firma</span><span class="scheda-value">Castellini Baldissera (Amministratore)</span></div>
+<div class="scheda-row"><span class="scheda-label">Stampatore</span><span class="scheda-value">Brevetti Calcografia &amp; Cartevalori, Milano</span></div>
+<div class="scheda-row"><span class="scheda-label">Agg. cap.</span><span class="scheda-value">Già annotato: dic. 1969 → L. 16.300.000.000</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo — assorbita in UNIDAL 1976</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 25–80</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Calcografia bordeaux/marrone vinaccia su carta avorio — stesso stampatore (Brevetti Calcografia) della SAROM 1957: colori e tecnica analoghi, ma layout completamente diverso.</p><p>Due vignette allegoriche femminili: in alto una figura seduta in atteggiamento nobile, in basso una figura con covone di grano — allegoria classica di Cerere/Abbondanza, perfetta per un'azienda alimentare. La scelta iconografica è colta e coerente con l'oggetto sociale.</p><p>In alto a sinistra, l'annotazione stampata in nero aggiorna il capitale a L. 16.300.000.000 (delibera 10 dicembre 1969, Foro Milano n. 79): sei mesi dopo l'emissione, la società aveva già aumentato il capitale del 55%. Sigillo MM al centro.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>La doppia M del logo non è casuale: sta per Motta e per Milano — Angelo Motta firmava i propri prodotti unendo identità personale e urbana. Inventò il panettone moderno (alto, soffice, lievito di birra) e fu il vero creatore della Colomba pasquale — su idea del pubblicitario Dino Vallani negli anni '30, una «tradizione» inventata a tavolino che milioni di italiani considerano oggi antica. Nel 1968 il 35% del capitale fu ceduto alla SME/IRI.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag storia">🎂 Inventori del panettone moderno e della Colomba</span><span class="scheda-tag econ">📈 IRI/SME — autunno caldo</span><span class="scheda-tag art">🌾 Allegoria di Cerere in basso</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Autostrade_Meridionali.jpg', 'Autostrade Meridionali S.p.A.')">
+        <img src="Autostrade_Meridionali.jpg" alt="Autostrade Meridionali S.p.A." loading="lazy" />
+        <span class="scheda-badge badge-it">🇮🇹 Italia</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">5 aprile 1988</span>
+          <h3 class="scheda-title">Autostrade Meridionali S.p.A.</h3>
+          <span class="scheda-subtitle">Certificato azionario nominativo · 4 azioni · Napoli · Gruppo IRI-Italstat</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Certificato azionario nominativo</span></div>
+<div class="scheda-row"><span class="scheda-label">N.</span><span class="scheda-value">00500248 R</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">L. 4.000/az. (× 4 = L. 16.000)</span></div>
+<div class="scheda-row"><span class="scheda-label">Intestatario</span><span class="scheda-value">Acetti Paride, Milano 27/3/1921</span></div>
+<div class="scheda-row"><span class="scheda-label">Gruppo</span><span class="scheda-value">IRI – Italstat → Autostrade per l'Italia</span></div>
+<div class="scheda-row"><span class="scheda-label">Tecnica</span><span class="scheda-value">Stampa offset — modulo continuo (fori laterali)</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo — sciolta 29 aprile 2024</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 5–30</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Grafica modernista anni '80, completamente lontana dalle cromolitografie storiche. Rosso/rosa istituzionale su bianco — i colori del Gruppo IRI-Autostrade. Logo SAM (doppio chevron stilizzato) in cartiglio ovale centrale.</p><p>I fori lungo i margini superiore e inferiore non sono decorativi: sono i segni di trascinamento delle stampanti a modulo continuo degli anni '80. I certificati azionari erano prodotti in serie su carta teletype, poi staccati e piegati. Un documento di transizione tra l'era artigianale e quella informatica.</p><p>Tecnica offset industriale, molto distante dalla calcografia della SAROM o della Motta. La semplicità grafica è figlia dell'epoca: siamo a un passo dalla dematerializzazione totale dei titoli (avvenuta in Italia negli anni 2000).</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>L'A3 Napoli-Salerno fu inaugurata il 25 giugno 1925 — seconda autostrada d'Italia, appena un anno dopo la Milano-Laghi. L'intestatario <strong>Acetti Paride</strong> (Milano 27/3/1921, Via dell'Annunciata 31) compare in quattro documenti diversi di questa collezione — un piccolo investitore milanese degli anni '80-'90 tracciato involontariamente. La società fu sciolta il 29 aprile 2024, l'ultima in ordine cronologico della collezione.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag storia">🛣️ Seconda autostrada d'Italia (1925)</span><span class="scheda-tag storia">👤 Acetti Paride — 1° di 4 documenti</span><span class="scheda-tag econ">📈 Ultima società: sciolta 2024</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('MM.jpg', 'Metropolitana Milanese (MM) S.p.A.')">
+        <img src="MM.jpg" alt="Metropolitana Milanese (MM) S.p.A." loading="lazy" />
+        <span class="scheda-badge badge-it">🇮🇹 Italia</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">3 dicembre 1973</span>
+          <h3 class="scheda-title">Metropolitana Milanese (MM) S.p.A.</h3>
+          <span class="scheda-subtitle">Prestito obbligazionario 7% 1973–1988 · 100 obbligazioni cumulative</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Obbligazione al portatore cumulativa</span></div>
+<div class="scheda-row"><span class="scheda-label">Serie / N.</span><span class="scheda-value">Serie 082 / N. 047</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">L. 100.000 (100 × L. 1.000)</span></div>
+<div class="scheda-row"><span class="scheda-label">Rendimento</span><span class="scheda-value">7% annuo — rimborso 1988 in 15 annualità</span></div>
+<div class="scheda-row"><span class="scheda-label">Stampatore</span><span class="scheda-value">Officina Carta Valori Durst Lombarda, Milano</span></div>
+<div class="scheda-row"><span class="scheda-label">Timbro</span><span class="scheda-value">Credito Italiano 2 — Tesoro</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo — rimborsato regolarmente 1988</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 20–60</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Rosso mattone/bordeaux su carta bianca — sobrio e istituzionale, con accenti in rosso brillante per i valori nominali e la scritta «CENTOMILA». Grafica funzionalista anni '70.</p><p>Sei stemmi araldici alle posizioni cardinali del documento: le antiche Porte di Milano (Nuova, Ticinese, Romana, Orientale, Comasina, Vercellina). La scelta non è decorativa: la metropolitana unisce tutti i quartieri, tutte le «porte» della città. Sigillo MM al centro in basso.</p><p>Doppia bordura a onde e guilloché in rosso — tecnica antifalsificazione standard per i titoli pubblici italiani del dopoguerra. Il timbro «Credito Italiano 2 — Tesoro» indica che il certificato transitò per la filiale bancaria come banca depositaria.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>La metropolitana di Milano nacque grazie ai prestiti obbligazionari sottoscritti direttamente dai milanesi — non dallo Stato. Chi comprò questo titolo nel 1973 stava letteralmente pagando il tunnel sotto i propri piedi. Emesso il 3 dicembre 1973 — in piena crisi petrolifera (shock di ottobre 1973). Il 7% sembrava generoso: l'inflazione italiana degli anni seguenti (oltre il 15% annuo) lo rese quasi irrisorio per chi tenne il titolo fino al 1988.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag storia">🚇 Metro finanziata dai milanesi</span><span class="scheda-tag storia">⛽ Crisi petrolifera ottobre 1973</span><span class="scheda-tag art">🎨 Stemmi delle 6 Porte di Milano</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('PAN.jpg', 'Pan American World Airways, Inc.')">
+        <img src="PAN.jpg" alt="Pan American World Airways, Inc." loading="lazy" />
+        <span class="scheda-badge badge-us">🇺🇸 USA</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">21 giugno 1968</span>
+          <h3 class="scheda-title">Pan American World Airways, Inc.</h3>
+          <span class="scheda-subtitle">Capital Stock · 1 azione · New York State</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Common Stock — al portatore (street name)</span></div>
+<div class="scheda-row"><span class="scheda-label">N.</span><span class="scheda-value">N0274510</span></div>
+<div class="scheda-row"><span class="scheda-label">Intestatario</span><span class="scheda-value">Dean Witter &amp; Co. (oggi Morgan Stanley)</span></div>
+<div class="scheda-row"><span class="scheda-label">Registrar</span><span class="scheda-value">Chemical Bank New York Trust (oggi JPMorgan)</span></div>
+<div class="scheda-row"><span class="scheda-label">Transfer Agent</span><span class="scheda-value">Bankers Trust Company</span></div>
+<div class="scheda-row"><span class="scheda-label">Annullamento</span><span class="scheda-value">Perforazione CANCELLED</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo — fallimento 4 dic. 1991</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 20–60</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Marrone ruggine/mattone su carta bianca — tono austero e istituzionale, tipico dei certificati azionari americani degli anni '60. Incisione su acciaio (intaglio) combinata con stampa tipografica, tecnica antifalsificazione standard per i titoli NYSE.</p><p>Bordura guilloché geometrica a onde concentriche — identica alla tecnica delle banconote americane, prodotta dalle stesse aziende (American Bank Note Company). Formato orizzontale (landscape) — standard americano, opposto al verticale italiano.</p><p>La perforazione CANCELLED al centro forma un pattern di fori che cancella il titolo — metodo americano equivalente al timbro «annullato» italiano. Nessuna vignetta allegorica: il documento americano punta sulla sicurezza tecnica, non sull'arte.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>Emesso al momento dell'apice assoluto di Pan Am: 87 paesi, 6 continenti, le hostess in uniforme Emilio Pucci come simbolo globale di modernità e glamour. Il declino iniziò con la crisi petrolifera del 1973. La strage di Lockerbie (21 dicembre 1988, 270 morti) distrusse la fiducia dei passeggeri. Il 4 dicembre 1991, meno di un'ora dall'apertura degli uffici, il CEO ordinò la sospensione immediata di tutte le attività: oltre 10.000 dipendenti persero il lavoro in un giorno.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag storia">✈️ Apice Pan Am: 87 paesi, 6 continenti</span><span class="scheda-tag storia">🏛️ Lockerbie — fallimento 4 dic. 1991</span><span class="scheda-tag econ">📈 NYSE · Dean Witter/Morgan Stanley</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Ginori.jpg', 'Società Ceramica Italiana Richard-Ginori S.p.A.')">
+        <img src="Ginori.jpg" alt="Società Ceramica Italiana Richard-Ginori S.p.A." loading="lazy" />
+        <span class="scheda-badge badge-it">🇮🇹 Italia</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">15 novembre 1967</span>
+          <h3 class="scheda-title">Società Ceramica Italiana Richard-Ginori S.p.A.</h3>
+          <span class="scheda-subtitle">1.000 azioni · Eredità Lombardo R. Costantino · 12 co-intestatari da Agrigento</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Certificato azionario nominativo cumulativo</span></div>
+<div class="scheda-row"><span class="scheda-label">N.</span><span class="scheda-value">0016169</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">L. 250/az. (× 1.000 = L. 250.000)</span></div>
+<div class="scheda-row"><span class="scheda-label">Intestatari</span><span class="scheda-value">12 eredi Lombardo/Tortorici — tutti da Agrigento</span></div>
+<div class="scheda-row"><span class="scheda-label">Firma</span><span class="scheda-value">Castellini Baldissera (Amministratore)</span></div>
+<div class="scheda-row"><span class="scheda-label">Origine</span><span class="scheda-value">Manifattura Ginori di Doccia, fondata 1735</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo — fallimento 2013</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 20–60</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Calcografia bordeaux/seppia su carta avorio — sobria ed elegante, coerente con l'identità di una maison di porcellana di lusso. Logo RG in cartiglio circolare — la storica firma di fabbrica.</p><p>Figura allegorica femminile in basso a sinistra, realizzata con buona qualità esecutiva. Il documento è organizzato tipograficamente in modo molto preciso, con la lista dei 12 co-intestatari stampata a macchina nel campo centrale — un documento che è anche un registro genealogico.</p><p>La lista degli eredi rivela una famiglia siciliana dispersa in tutta Italia: Roma, Palermo, Porto d'Ischia, Agrigento, Milano. Nati tra il 1881 e il 1914, legati da cognomi Lombardo e Tortorici. Lombardo Olga riceve solo 1/36 invece di 1/12 — una differenza di quota che apre domande irrisolvibili.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>Manifattura di Doccia fondata nel 1735 dal marchese Carlo Ginori — quasi tre secoli di storia. Tra il 1923 e il 1930 Gio Ponti fu direttore artistico, creando alcuni dei pezzi più iconici del design italiano. Nel 2013 fallimento; acquistata da Gucci/Kering e ribattezzata Ginori 1735. Una manifattura sopravvissuta a Napoleone, all'unità d'Italia, a due guerre mondiali — fino al mercato globale.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag storia">🏺 Manifattura Ginori 1735 — Gio Ponti</span><span class="scheda-tag storia">👨‍👩‍👧‍👦 Eredità siciliana — 12 co-intestatari</span><span class="scheda-tag storia">🏛️ Fallimento 2013 — oggi Gucci/Kering</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Aig_1969.jpg', 'American General Insurance Company')">
+        <img src="Aig_1969.jpg" alt="American General Insurance Company" loading="lazy" />
+        <span class="scheda-badge badge-us">🇺🇸 USA</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">9 gennaio 1969</span>
+          <h3 class="scheda-title">American General Insurance Company</h3>
+          <span class="scheda-subtitle">65 azioni · FSC & Company · Houston, Texas</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Common Stock — 65 azioni</span></div>
+<div class="scheda-row"><span class="scheda-label">N.</span><span class="scheda-value">116.890</span></div>
+<div class="scheda-row"><span class="scheda-label">Par value</span><span class="scheda-value">$1,50 per azione</span></div>
+<div class="scheda-row"><span class="scheda-label">Intestatario</span><span class="scheda-value">FSC &amp; Company (broker)</span></div>
+<div class="scheda-row"><span class="scheda-label">Transfer Agent</span><span class="scheda-value">First National Bank of Chicago (oggi JPMorgan)</span></div>
+<div class="scheda-row"><span class="scheda-label">Vignetta</span><span class="scheda-value">Cavaliere a colori — l'unica vignetta a colori in collezione</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo — acquisita da AIG per $23 mld (2001)</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 15–45</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Blu intenso su carta bianca — diverso dal marrone ruggine del Pan Am e del AIG 1972. La differenza cromatica tra i due certificati della stessa società a tre anni di distanza è evidente e significativa: evidentemente il template grafico fu aggiornato.</p><p>La vignetta centrale è l'unica a colori vivaci dell'intera collezione: un cavaliere (probabilmente George Washington, richiamo esplicito al nome «General») su cavallo bianco in ovale colorato. Tecnica: incisione su acciaio con sovrastampa tipografica a colori. Bordura guilloché geometrica blu.</p><p>Formato orizzontale (landscape), come il Pan Am. Il numero seriale «116890» è stampato in rosso vivace su fondo scuro — tipico dei certificati americani dell'epoca per rendere visibile l'identificativo.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>Fondata nel 1926 da Gus Wortham con Jesse H. Jones — quest'ultimo poi diventato Segretario al Commercio di Roosevelt durante la Seconda Guerra Mondiale. Emessa il 9 gennaio 1969, sei mesi prima dello sbarco sulla Luna: Houston era al suo apice mondiale, sede del Mission Control dell'Apollo. «Houston, we have a problem» — la frase iconica dell'Apollo 13 — sarebbe stata pronunciata 15 mesi dopo.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag art">🎨 Unica vignetta a colori in collezione</span><span class="scheda-tag storia">🚀 Houston — 6 mesi prima della Luna</span><span class="scheda-tag econ">📈 NYSE · Acquisita da AIG $23 mld 2001</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Tobacco_Company.jpg', 'The American Tobacco Company')">
+        <img src="Tobacco_Company.jpg" alt="The American Tobacco Company" loading="lazy" />
+        <span class="scheda-badge badge-us">🇺🇸 USA</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">8 gennaio 1969</span>
+          <h3 class="scheda-title">The American Tobacco Company</h3>
+          <span class="scheda-subtitle">30 azioni · Mrs Ottilie M Dux · New Jersey</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Common Stock — 30 azioni</span></div>
+<div class="scheda-row"><span class="scheda-label">N.</span><span class="scheda-value">S0125010</span></div>
+<div class="scheda-row"><span class="scheda-label">Intestatario</span><span class="scheda-value">Mrs Ottilie M Dux (persona fisica)</span></div>
+<div class="scheda-row"><span class="scheda-label">Registrar</span><span class="scheda-value">First National City Bank (oggi Citibank)</span></div>
+<div class="scheda-row"><span class="scheda-label">Transfer Agent</span><span class="scheda-value">Morgan Guaranty Trust Company, NY</span></div>
+<div class="scheda-row"><span class="scheda-label">Fondazione</span><span class="scheda-value">1890 (J.B. Duke) — Dow Jones originario 1896</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo — ristrutturata → BAT entro 1994</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 20–60</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Verde intenso su carta bianca — «certificate for less than 100 shares» nei medaglioni agli angoli. Incisione su acciaio della American Bank Note Company. Formato orizzontale come tutti i titoli americani della collezione.</p><p>Vignetta centrale: un capo Nativo Americano in copricapo di piume, circondato da una piantagione di tabacco. Iconografia di marketing tipica del tabacco americano dell'epoca — che associava il tabacco alla «tradizione indigena». Oggi considerata problematica, era standard nel 1969.</p><p>Bordura guilloché geometrica identica agli altri titoli americani della collezione — stesso produttore (American Bank Note Company). Il contrasto tra la serietà giuridica del documento e l'iconografia coloniale della vignetta è visivamente straniante.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>Una delle 12 società originarie del Dow Jones Industrial Average (1896). Spezzata dalla Corte Suprema nel 1911 per violazione dell'antitrust: da un monopolio su 150 fabbriche emersero 16 aziende successive. Lucky Strike fu lanciata nel 1916. Il nome dell'intestataria — Mrs Ottilie M Dux — suggerisce origini tedesco-austriache, un dettaglio umano che aggiunge colore a un documento altrimenti anonimo.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag storia">🚬 Lucky Strike — Dow Jones 1896</span><span class="scheda-tag storia">🏛️ Antitrust 1911</span><span class="scheda-tag alert">⚠️ Iconografia controversa — Nativo Americano</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('AIG1972.jpg', 'American General Insurance Company')">
+        <img src="AIG1972.jpg" alt="American General Insurance Company" loading="lazy" />
+        <span class="scheda-badge badge-us">🇺🇸 USA</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">29 settembre 1972</span>
+          <h3 class="scheda-title">American General Insurance Company</h3>
+          <span class="scheda-subtitle">5 azioni · A.G. Becker & Co. Inc. · Houston, Texas</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Common Stock — 5 azioni</span></div>
+<div class="scheda-row"><span class="scheda-label">N.</span><span class="scheda-value">NF15952</span></div>
+<div class="scheda-row"><span class="scheda-label">CUSIP</span><span class="scheda-value">026357 10 3 — primo CUSIP della collezione</span></div>
+<div class="scheda-row"><span class="scheda-label">Intestatario</span><span class="scheda-value">A.G. Becker &amp; Co. Inc. (broker, fallito 1974)</span></div>
+<div class="scheda-row"><span class="scheda-label">Transfer Agent</span><span class="scheda-value">First National City Bank (Citibank)</span></div>
+<div class="scheda-row"><span class="scheda-label">Registrar</span><span class="scheda-value">Chase Manhattan Bank (oggi JPMorgan)</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo — acquisita da AIG per $23 mld (2001)</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 10–30</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Marrone/arancio su bianco — completamente diverso dal blu del gemello 1969. Formato verticale (portrait) invece di orizzontale: evidentemente il template fu completamente rinnovato in tre anni. Stessa firma del Secretary (Raymond S. Mast) in entrambi.</p><p>Vignetta di Washington in busto B/N — più classica e formale del cavaliere a colori del 1969. Medaglioni «Certificate for Less Than 100 Shares» agli angoli. Il CUSIP (Committee on Uniform Security Identification Procedures) appare per la prima volta: introdotto nel 1968, qui già in uso.</p><p>Due banche distinte per ruoli diversi: Transfer Agent (First National City Bank = Citibank) e Registrar (Chase Manhattan = JPMorgan). Sistema di doppio controllo tipico degli anni '70 per i titoli NYSE di grandi società.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>Emesso il 29 settembre 1972 — tre mesi dopo lo scandalo Watergate (irruzione del 17 giugno 1972). Nixon aveva appena vinto le elezioni con il 60% dei voti, ma la crisi politica covava sotto la superficie. Il broker intestatario — A.G. Becker & Co., fondato nel 1893 a Chicago — fallì nel 1974, appena due anni dopo. Come gli altri broker americani di questa collezione (Dean Witter, FSC, Walston), è oggi scomparso.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag storia">🏛️ Watergate — settembre 1972</span><span class="scheda-tag econ">📈 Primo CUSIP della collezione</span><span class="scheda-tag econ">🏦 Broker scomparso: A.G. Becker</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Westvaco.jpg', 'Westvaco Corporation')">
+        <img src="Westvaco.jpg" alt="Westvaco Corporation" loading="lazy" />
+        <span class="scheda-badge badge-us">🇺🇸 USA</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">8 luglio (anni '60–'70)</span>
+          <h3 class="scheda-title">Westvaco Corporation</h3>
+          <span class="scheda-subtitle">100 azioni · Walston & Co. Inc. · Delaware</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Common Stock — 100 azioni</span></div>
+<div class="scheda-row"><span class="scheda-label">N.</span><span class="scheda-value">A119979</span></div>
+<div class="scheda-row"><span class="scheda-label">Intestatario</span><span class="scheda-value">Walston &amp; Co. Inc. (broker, fallito 1974)</span></div>
+<div class="scheda-row"><span class="scheda-label">Transfer Agent</span><span class="scheda-value">Irving Trust Company, New York</span></div>
+<div class="scheda-row"><span class="scheda-label">Registrar</span><span class="scheda-value">First National City Bank (Citibank)</span></div>
+<div class="scheda-row"><span class="scheda-label">Fondazione</span><span class="scheda-value">1888 come Piedmont Pulp &amp; Paper → Westvaco 1969</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo — oggi WestRock/Smurfit (2° packaging mondiale)</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 15–40</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Blu intenso su carta bianca — identico per palette al AIG 1969. Composizione grafica con medaglioni circolari guilloché sovrapposti di grandi dimensioni: una delle soluzioni grafiche più elaborate tra i titoli americani.</p><p>Vignetta centrale: un boscaiolo muscoloso che abbatte un albero — riferimento iconografico diretto all'industria della carta e del legno, senza alcun filtro allegorico. Immediatezza visiva tipica del modernismo americano anni '60.</p><p>American Bank Note Company: lo stesso stampatore del Pan Am e del Tobacco Company. La qualità dell'incisione è alta. Il trasferimento è consentito «in the City of New York or in Cleveland, Ohio» — nota insolita che riflette la struttura logistica della società.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>Tutti e quattro i broker americani della collezione (Dean Witter, FSC, Walston, A.G. Becker) sono oggi scomparsi — assorbiti o falliti. I titoli sopravvivono ai broker che li custodivano. Westvaco divenne MeadWestvaco nel 2002, poi WestRock nel 2015, poi Smurfit WestRock nel 2024: il secondo produttore di packaging mondiale per fatturato. Una storia di consolidamento industriale che comprime un secolo in quattro nomi.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag econ">📈 → WestRock 2015 → Smurfit WestRock 2024</span><span class="scheda-tag storia">🌲 Industria cartaria americana</span><span class="scheda-tag storia">🏦 Broker scomparso: Walston & Co.</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Sio.jpg', 'SIO — Società per l'Industria dell'Ossigeno e di Altri Gas')">
+        <img src="Sio.jpg" alt="SIO — Società per l'Industria dell'Ossigeno e di Altri Gas" loading="lazy" />
+        <span class="scheda-badge badge-it">🇮🇹 Italia</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">19 gennaio 1978</span>
+          <h3 class="scheda-title">SIO — Società per l'Industria dell'Ossigeno e di Altri Gas</h3>
+          <span class="scheda-subtitle">5 azioni · Marconcini Piero, Viareggio · Milano · Gruppo Air Liquide</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Certificato azionario nominativo</span></div>
+<div class="scheda-row"><span class="scheda-label">N.</span><span class="scheda-value">405.676</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">L. 800/az. (× 5 = L. 4.000)</span></div>
+<div class="scheda-row"><span class="scheda-label">Intestatario</span><span class="scheda-value">Marconcini Piero — nato Pisa 21/1/1915 — Viareggio (LU)</span></div>
+<div class="scheda-row"><span class="scheda-label">Gruppo</span><span class="scheda-value">Air Liquide (Parigi) — filiale italiana dal 1909</span></div>
+<div class="scheda-row"><span class="scheda-label">Aumento cap.</span><span class="scheda-value">Timbro: da L. 6,43 mld a L. 7,07 mld (apr. 1977)</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo — rinominata Air Liquide Italia (1996)</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 5–20</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Blu intenso su carta bianca — palette aziendale SIO, presente anche nel logo e nelle bordure laterali con il monogramma ripetuto in filigrana arancione. Grafica funzionalista anni '70, sobria e tipografica.</p><p>Logo SIO stilizzato in arancione/salmone — ripetuto come filigrana centrale e come motivo nelle bordure laterali. Il timbro di aumento di capitale in alto (nero su bianco) è integrato graficamente nel documento in modo standardizzato — lontano dai timbri artigianali delle epoche precedenti.</p><p>Documento prevalentemente testuale, con bordura a moduli geometrici ripetuti. Siamo alla vigilia della dematerializzazione: l'estetica del documento finanziario si è completamente industrializzata rispetto alle cromolitografie Liberty di inizio secolo.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>Un dettaglio umano: il documento è datato 19 gennaio 1978. Marconcini Piero era nato il 21 gennaio 1915 — il certificato fu emesso due giorni prima del suo 63° compleanno. Cinque azioni da 800 lire l'una: un piccolo risparmiatore di Viareggio che investiva cifre simboliche in una società di gas industriali milanese controllata da francesi. Tre mesi dopo — 16 marzo 1978 — le Brigate Rosse rapirono Aldo Moro.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag storia">🏛️ Anno del rapimento Moro — 1978</span><span class="scheda-tag storia">🎂 Emesso 2 giorni prima del 63° compleanno</span><span class="scheda-tag intl">🌍 Filiale italiana Air Liquide dal 1909</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Buitoni.jpg', 'Buitoni S.p.A.')">
+        <img src="Buitoni.jpg" alt="Buitoni S.p.A." loading="lazy" />
+        <span class="scheda-badge badge-it">🇮🇹 Italia</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">~1985</span>
+          <h3 class="scheda-title">Buitoni S.p.A.</h3>
+          <span class="scheda-subtitle">Azione di Risparmio · con 5 cedole integre · Perugia</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Azione di Risparmio (senza diritto di voto)</span></div>
+<div class="scheda-row"><span class="scheda-label">N.</span><span class="scheda-value">400.117</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">L. 2.000</span></div>
+<div class="scheda-row"><span class="scheda-label">Cedole</span><span class="scheda-value">5 cedole staccabili nn. 33–37 — ancora integre</span></div>
+<div class="scheda-row"><span class="scheda-label">Agg. cap.</span><span class="scheda-value">Delib. 25/6/85: L. 185.697.114.000</span></div>
+<div class="scheda-row"><span class="scheda-label">Ceduta a</span><span class="scheda-value">Nestlé marzo 1988 per L. 1.600 miliardi</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 15–40</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Grafica modernista anni '80: logo BUITONI in caratteri rossi bold su sfondo bianco, dominante e immediatamente riconoscibile. Bordi con motivi ripetuti in bordeaux. La semplicità grafica è un'inversione totale rispetto alle cromolitografie storiche.</p><p>Figura femminile con spighe di grano in basso — lontana allegoria della tradizione alimentare. Il globo terrestre suggerisce vocazione internazionale. Le 5 cedole staccabili (nn. 33–37) sono ancora integre: probabilmente il titolo non fu mai presentato alla riscossione dei dividendi.</p><p>Formato particolare: certificato orizzontale con cedole a destra come strip separabile. Le cedole recano numeri progressivi e sono microperforate per lo stacco — soluzione grafico-funzionale tipica dei titoli azionari italiani degli anni '80.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>Fondata nel 1827 a Sansepolcro, Buitoni è uno dei marchi alimentari italiani più antichi. Le 5 cedole ancora intatte suggeriscono che l'azione non fu mai presentata alla riscossione: o il titolo fu ceduto prima, o i dividendi non furono mai riscossi. Nel 1985 passò alla CIR di Carlo De Benedetti, che cercò di creare un polo alimentare europeo. Nel 1988 venduta a Nestlé per L. 1.600 miliardi — la più grande acquisizione nell'alimentare italiano dell'epoca.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag storia">🍝 Fondata 1827 — marchio oggi Nestlé</span><span class="scheda-tag econ">📈 De Benedetti → Nestlé 1988</span><span class="scheda-tag storia">📎 5 cedole integre — mai incassate</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Frigoriferi.jpg', 'Frigoriferi Milanesi S.p.A.')">
+        <img src="Frigoriferi.jpg" alt="Frigoriferi Milanesi S.p.A." loading="lazy" />
+        <span class="scheda-badge badge-it">🇮🇹 Italia</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">18 febbraio 1981</span>
+          <h3 class="scheda-title">Frigoriferi Milanesi S.p.A.</h3>
+          <span class="scheda-subtitle">Certificato azionario nominativo · Acetti Paride · Via Piranesi 14, Milano</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Certificato azionario nominativo</span></div>
+<div class="scheda-row"><span class="scheda-label">N.</span><span class="scheda-value">00018</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">L. 5.000 per azione</span></div>
+<div class="scheda-row"><span class="scheda-label">Intestatario</span><span class="scheda-value">Acetti Paride, Milano 27/3/1921 — Via Flli Grasa 8</span></div>
+<div class="scheda-row"><span class="scheda-label">Sede</span><span class="scheda-value">Via Piranesi 14, Milano — fondata 1899</span></div>
+<div class="scheda-row"><span class="scheda-label">Aumenti cap.</span><span class="scheda-value">Timbri: 1988 (L. 8 mld) e 1993 (L. 4,5 mld)</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 5–20</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Grafica funzionalista anni '70-'80: blu dominante, struttura tipografica, logo FM in ovale. Bordura a moduli geometrici ripetuti in verde e viola — combinazione cromatica insolita nella collezione.</p><p>Il documento è orientato verticalmente rispetto al foglio — formato «a bandiera» ribaltato rispetto a quello americano. Due timbri di aumento di capitale integrati nel documento con riquadri stampati: tecnica ormai standardizzata rispetto all'artigianalità dei timbri storici.</p><p>La firma dell'amministratore è quasi illeggibile — tipico dei documenti seriali degli anni '80. Il sigillo a secco della società è visibile in basso. Mancanza totale di elementi decorativi: siamo all'antitesi estetica delle cromolitografie di inizio secolo.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>I Frigoriferi Milanesi erano uno dei grandi magazzini di stoccaggio industriale della Milano pre-container: carni, pesci, burro, formaggi per il mercato lombardo. Via Piranesi è nella zona est di Milano, allora distretto industriale. <strong>Acetti Paride</strong> compare qui per la seconda volta nella collezione (dopo Autostrade Meridionali 1988) — un piccolo investitore milanese degli anni '80 che aveva costruito un piccolo portafoglio di azioni in settori diversissimi.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag storia">❄️ Logistica industriale Milano anni '80</span><span class="scheda-tag storia">👤 Acetti Paride — 2° di 4 documenti</span><span class="scheda-tag econ">📈 Anni '80 italiani</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Gerolimich.jpg', 'Gerolimich S.p.A.')">
+        <img src="Gerolimich.jpg" alt="Gerolimich S.p.A." loading="lazy" />
+        <span class="scheda-badge badge-it">🇮🇹 Italia</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">29 giugno 1992</span>
+          <h3 class="scheda-title">Gerolimich S.p.A.</h3>
+          <span class="scheda-subtitle">Azione di Risparmio · Accetti Paride · Genova</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Certificato azionario nominativo — Risparmio</span></div>
+<div class="scheda-row"><span class="scheda-label">N.</span><span class="scheda-value">050.008</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">L. 600 per azione</span></div>
+<div class="scheda-row"><span class="scheda-label">Intestatario</span><span class="scheda-value">Accetti Paride, Via dell'Annunciata 31, Milano</span></div>
+<div class="scheda-row"><span class="scheda-label">Origine</span><span class="scheda-value">Navigazione Generale Austriaca Gerolimich &amp; Co., Trieste (1907)</span></div>
+<div class="scheda-row"><span class="scheda-label">Capitale</span><span class="scheda-value">L. 158.911.200.000 — 265 milioni di azioni da L. 600</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 5–20</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Grafica modernista anni '90 estremamente sobria: blu elettrico su bianco, logo «G» stilizzato in nero, testo tipografico. Bordura geometrica minimal. L'evoluzione grafica dalla cromolitografia del 1905 a questo documento è il racconto visivo di un intero secolo.</p><p>Il sigillo a secco circolare in basso è l'unico elemento che richiama la tradizione dei titoli storici. Il codice «6465» in basso a sinistra è un codice interno di archivio. Nessuna vignetta, nessun elemento decorativo: documento industriale puro.</p><p>La firma dell'amministratore è calligraficamente elaborata — un contrasto con la semplicità del resto del documento. La presenza di due classi di azioni (208 milioni ordinarie + 56 milioni di risparmio) riflette la struttura tipica delle SpA italiane quotate degli anni '90.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>La Navigazione Generale Austriaca Gerolimich & Co. di Trieste operava con bandiera austro-ungarica. Con l'annessione di Trieste all'Italia nel 1918, divenne «italiana» senza muoversi di un metro — solo per decreto geografico. Una famiglia di armatori triestini che nel 1907 era «austriaca» e nel 1918 divenne «italiana». Accetti Paride compare qui per la terza volta in collezione: Via dell'Annunciata (vs Via Flli Grasa degli anni '80) — si era forse trasferito.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag storia">⚓ Armatori: austriaci → italiani 1918</span><span class="scheda-tag storia">👤 Acetti Paride — 3° di 4 documenti</span><span class="scheda-tag intl">🌍 Da Trieste asburgica a Genova</span></div>
+      </div>
+    </div>
+    <div class="scheda">
+      <div class="scheda-photo" onclick="openLightbox('Modigliani.jpg', 'Balzaretti Modigliani S.p.A.')">
+        <img src="Modigliani.jpg" alt="Balzaretti Modigliani S.p.A." loading="lazy" />
+        <span class="scheda-badge badge-it">🇮🇹 Italia</span>
+        <span class="zoom-hint">🔍 Clicca per zoom</span>
+      </div>
+      <div class="scheda-content">
+        <div class="scheda-header">
+          <span class="scheda-year">15 ottobre 1992</span>
+          <h3 class="scheda-title">Balzaretti Modigliani S.p.A.</h3>
+          <span class="scheda-subtitle">Accetti Paride · Milano · oggi Saint-Gobain Isover Italia</span>
+        </div>
+        <div class="scheda-body">
+          <div>
+            <p class="scheda-col-title">Dati</p>
+            <div class="scheda-table"><div class="scheda-row"><span class="scheda-label">Tipo</span><span class="scheda-value">Certificato azionario nominativo</span></div>
+<div class="scheda-row"><span class="scheda-label">N.</span><span class="scheda-value">009.986</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore nom.</span><span class="scheda-value">L. 18.000 per azione</span></div>
+<div class="scheda-row"><span class="scheda-label">Intestatario</span><span class="scheda-value">Accetti Paride, Via dell'Annunciata 31, Milano</span></div>
+<div class="scheda-row"><span class="scheda-label">Origine</span><span class="scheda-value">A.S. Modigliani, Livorno 1850 — 1ª vetreria ind. d'Italia</span></div>
+<div class="scheda-row"><span class="scheda-label">Saint-Gobain</span><span class="scheda-value">Entra anni '20 — maggioranza nel dopoguerra</span></div>
+<div class="scheda-row"><span class="scheda-label">Valore fin.</span><span class="scheda-value red">Nullo — oggi Saint-Gobain Isover Italia</span></div>
+<div class="scheda-row"><span class="scheda-label">Stima</span><span class="scheda-value">€ 5–25</span></div>
+</div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Arte &amp; grafica</p>
+            <div class="scheda-arte"><p>Grafica minimale verde e grigio su bianco — la più sobria della collezione. Bordura guilloché verde a moduli ripetuti. Nessuna vignetta, nessun elemento figurativo. Il documento è pura struttura informativa.</p><p>Testo interamente in italiano, organizzato in modo chiaro e gerarchico. La storia della società è sintetizzata in poche righe nel testo del certificato stesso — pratica insolita che rende il documento auto-descrittivo.</p><p>L'ultimo documento cronologicamente della collezione e il quarto di Acetti Paride: Via dell'Annunciata 31, Milano — lo stesso indirizzo del Gerolimich firmato lo stesso anno. In pochi mesi del 1992 Acetti Paride aveva comprato azioni di almeno tre società diverse.</p></div>
+          </div>
+          <div>
+            <p class="scheda-col-title">Note storiche</p>
+            <div class="scheda-note"><p>Fondata a Livorno nel 1850 come A.S. Modigliani — tra le prime aziende italiane del vetro industriale. Saint-Gobain (fondata a Parigi nel 1665 da Colbert per Luigi XIV) entrò nel capitale negli anni '20; nel dopoguerra assunse la maggioranza. Nel 2000 la ragione sociale divenne Saint-Gobain Isover Italia. Il marchio Isover è ancora presente nei cantieri edili italiani oggi: chi ha in mano questo documento del 1992 possiede un pezzo di storia di un gruppo nato 360 anni fa.</p></div>
+          </div>
+        </div>
+        <div class="scheda-tags"><span class="scheda-tag storia">🪟 Prima vetreria industriale d'Italia (1850)</span><span class="scheda-tag intl">🌍 Oggi Saint-Gobain Isover Italia</span><span class="scheda-tag storia">👤 Acetti Paride — 4° e ultimo documento</span></div>
+      </div>
+    </div>
+  </div><!-- /cards-grid -->
+</div><!-- /page-wrap -->
+
+<footer>
+  <span>© 2026 Giacomo Rabuzzi</span>
+  <span>Designed & built by hand</span>
+</footer>
+
+<script>
+  const cursor = document.getElementById("custom-cursor");
+  const zoomCursor = document.getElementById("zoom-cursor");
+  document.addEventListener("mousemove", e => {
+    cursor.style.left = e.clientX + "px"; cursor.style.top = e.clientY + "px";
+    zoomCursor.style.left = e.clientX + "px"; zoomCursor.style.top = e.clientY + "px";
+  });
+  document.addEventListener("mouseleave", () => cursor.style.opacity = "0");
+  document.addEventListener("mouseenter", () => cursor.style.opacity = "1");
+
+  const lb = document.getElementById("lightbox");
+  const lbImg = document.getElementById("lb-img");
+  const lbClose = document.getElementById("lb-close");
+  const lbZoom = document.getElementById("lb-zoom-level");
+  const lbContainer = document.getElementById("lb-container");
+
+  let scale = 1, isDragging = false, dragStartX = 0, dragStartY = 0, imgOffX = 0, imgOffY = 0;
+
+  function clamp(ox, oy, s) {
+    const iw = lbImg.naturalWidth * s, ih = lbImg.naturalHeight * s;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const mx = Math.max(0, (iw - vw) / 2), my = Math.max(0, (ih - vh) / 2);
+    return [Math.max(-mx, Math.min(mx, ox)), Math.max(-my, Math.min(my, oy))];
+  }
+
+  function applyT(s, ox, oy, anim) {
+    lbImg.style.transition = anim ? "transform .25s cubic-bezier(.2,.8,.3,1)" : "none";
+    lbImg.style.transform = "translate("+ox+"px,"+oy+"px) scale("+s+")";
+    lbZoom.textContent = Math.round(s * 100) + "%";
+    lbZoom.style.opacity = "1";
+    clearTimeout(lbZoom._t);
+    lbZoom._t = setTimeout(() => lbZoom.style.opacity = "0", 1400);
+  }
+
+  function openLightbox(src, title) {
+    scale = 1; imgOffX = 0; imgOffY = 0;
+    lbImg.src = src; lbImg.alt = title;
+    lb.classList.add("active");
+    document.body.style.overflow = "hidden";
+    cursor.style.display = "none"; zoomCursor.style.display = "block";
+    applyT(1, 0, 0, false);
+  }
+
+  function closeLightbox() {
+    lb.classList.remove("active"); document.body.style.overflow = "";
+    cursor.style.display = "flex"; zoomCursor.style.display = "none";
+    lbImg.src = ""; scale = 1; imgOffX = 0; imgOffY = 0;
+  }
+
+  lbClose.addEventListener("click", closeLightbox);
+  lb.addEventListener("click", e => { if (e.target === lb) closeLightbox(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeLightbox(); });
+
+  lb.addEventListener("wheel", e => {
+    if (!lb.classList.contains("active")) return;
+    e.preventDefault();
+    const d = e.deltaY < 0 ? 1.15 : 1 / 1.15;
+    const ns = Math.max(1, Math.min(5, scale * d));
+    const rect = lbImg.getBoundingClientRect();
+    imgOffX -= (e.clientX - rect.left - rect.width / 2) * (ns / scale - 1);
+    imgOffY -= (e.clientY - rect.top - rect.height / 2) * (ns / scale - 1);
+    scale = ns;
+    const [cx, cy] = clamp(imgOffX, imgOffY, scale);
+    imgOffX = cx; imgOffY = cy;
+    applyT(scale, imgOffX, imgOffY, false);
+  }, { passive: false });
+
+  lbImg.addEventListener("dblclick", () => { scale=1; imgOffX=0; imgOffY=0; applyT(1,0,0,true); });
+  lb.addEventListener("mousedown", e => {
+    if (scale <= 1) return; isDragging = true;
+    dragStartX = e.clientX - imgOffX; dragStartY = e.clientY - imgOffY;
+  });
+  window.addEventListener("mousemove", e => {
+    if (!isDragging) return;
+    imgOffX = e.clientX - dragStartX; imgOffY = e.clientY - dragStartY;
+    const [cx, cy] = clamp(imgOffX, imgOffY, scale);
+    imgOffX = cx; imgOffY = cy; applyT(scale, imgOffX, imgOffY, false);
+  });
+  window.addEventListener("mouseup", () => { isDragging = false; });
+
+  let lastDist = null, lastTX = null, lastTY = null;
+  lb.addEventListener("touchstart", e => {
+    if (e.touches.length === 2) {
+      lastDist = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+    } else if (e.touches.length === 1) {
+      lastTX = e.touches[0].clientX - imgOffX; lastTY = e.touches[0].clientY - imgOffY;
+    }
+  }, { passive: true });
+  lb.addEventListener("touchmove", e => {
+    e.preventDefault();
+    if (e.touches.length === 2) {
+      const d = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+      if (lastDist) { scale = Math.max(1, Math.min(5, scale * (d / lastDist))); const [cx,cy]=clamp(imgOffX,imgOffY,scale); imgOffX=cx; imgOffY=cy; applyT(scale,imgOffX,imgOffY,false); }
+      lastDist = d;
+    } else if (e.touches.length === 1 && scale > 1) {
+      imgOffX = e.touches[0].clientX - lastTX; imgOffY = e.touches[0].clientY - lastTY;
+      const [cx,cy]=clamp(imgOffX,imgOffY,scale); imgOffX=cx; imgOffY=cy; applyT(scale,imgOffX,imgOffY,false);
+    }
+  }, { passive: false });
+  lb.addEventListener("touchend", () => { lastDist = null; });
+</script>
+</body>
+</html>
